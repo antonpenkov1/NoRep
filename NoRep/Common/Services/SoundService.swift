@@ -28,8 +28,11 @@ final class SoundService {
     }
 
     private func configureSession() {
+        // .mixWithOthers only — no .duckOthers: ducking lowers the user's music and
+        // only restores it when the session deactivates, which a timer app never does.
+        // The cues are loud enough to cut through music at full volume.
         let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, options: [.mixWithOthers, .duckOthers])
+        try? session.setCategory(.playback, options: [.mixWithOthers])
         try? session.setActive(true)
     }
 
