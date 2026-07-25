@@ -81,10 +81,10 @@ Data Not Collected — приложение ничего не собирает �
 4+
 
 ## Support URL
-(нужна любая страница — можно ту же, где privacy policy, например GitHub Pages)
+https://github.com/antonpenkov1/NoRep
 
 ## Privacy Policy URL
-(обязательное поле — файл privacy-policy.html из этой папки, захостить на GitHub Pages)
+https://antonpenkov1.github.io/NoRep/
 
 ## Screenshots (эта папка, 1290×2796, iPhone 6.7")
 01-home — все таймеры
