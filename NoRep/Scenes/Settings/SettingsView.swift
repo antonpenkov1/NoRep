@@ -6,7 +6,11 @@ final class SettingsViewStore: ObservableObject {
         icons: [],
         selectedIconID: "default",
         packs: [],
-        selectedPack: "classic"
+        selectedPack: "classic",
+        voiceEnabled: false,
+        halfwayEnabled: true,
+        healthEnabled: false,
+        healthAvailable: false
     )
 
     var interactor: SettingsBusinessLogic!
@@ -41,6 +45,7 @@ struct SettingsView: View {
                 VStack(spacing: 14) {
                     iconSection
                     soundSection
+                    extrasSection
                 }
                 .padding(16)
             }
@@ -80,6 +85,56 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                }
+            }
+        }
+    }
+
+    private var extrasSection: some View {
+        Card {
+            VStack(spacing: 12) {
+                Toggle(isOn: Binding(
+                    get: { store.viewModel.voiceEnabled },
+                    set: { store.interactor.setVoice(enabled: $0) }
+                )) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Voice announcements")
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("“Round 5”, “Halfway”, “Rest”")
+                            .font(.system(.footnote, design: .rounded))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                }
+                .tint(Theme.accent)
+                Divider().overlay(Theme.cardBorder)
+                Toggle(isOn: Binding(
+                    get: { store.viewModel.halfwayEnabled },
+                    set: { store.interactor.setHalfway(enabled: $0) }
+                )) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Halfway alert")
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("Beep at 50% of AMRAP and long intervals")
+                            .font(.system(.footnote, design: .rounded))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                }
+                .tint(Theme.accent)
+                if store.viewModel.healthAvailable {
+                    Divider().overlay(Theme.cardBorder)
+                    Toggle(isOn: Binding(
+                        get: { store.viewModel.healthEnabled },
+                        set: { store.interactor.setHealth(enabled: $0) }
+                    )) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Save to Apple Health")
+                                .foregroundStyle(Theme.textPrimary)
+                            Text("Finished workouts close your rings")
+                                .font(.system(.footnote, design: .rounded))
+                                .foregroundStyle(Theme.textSecondary)
+                        }
+                    }
+                    .tint(Theme.accent)
                 }
             }
         }

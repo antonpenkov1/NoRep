@@ -16,6 +16,8 @@ final class TimerEngine {
         /// 3-2-1 warning ticks before a timed segment ends.
         case warningTick(secondsLeft: Int)
         case segmentStarted(WorkoutSegment)
+        /// Fired once per timed segment (60s and longer) at 50% elapsed.
+        case halfway(WorkoutSegment)
         case finished
     }
 
@@ -42,6 +44,7 @@ final class TimerEngine {
     /// Sum of durations of all completed segments (open-ended use actual elapsed).
     private var completedElapsed: TimeInterval = 0
     private var lastWarningSecond: Int = .max
+    private var halfwayFired = false
 
     var currentSegment: WorkoutSegment? {
         segments.indices.contains(segmentIndex) ? segments[segmentIndex] : nil
@@ -56,6 +59,7 @@ final class TimerEngine {
         accumulated = 0
         completedElapsed = 0
         lastWarningSecond = .max
+        halfwayFired = false
         anchor = Date()
         state = .running
         onEvent?(.segmentStarted(segments[0]))
@@ -129,6 +133,10 @@ final class TimerEngine {
                 lastWarningSecond = second
                 onEvent?(.warningTick(secondsLeft: second))
             }
+            if !halfwayFired && duration >= 60 && elapsed >= duration / 2 && segment.kind != .prepare {
+                halfwayFired = true
+                onEvent?(.halfway(segment))
+            }
         }
         emitTick()
     }
@@ -147,6 +155,7 @@ final class TimerEngine {
             accumulated = overshoot
             anchor = state == .running ? Date() : nil
             lastWarningSecond = .max
+            halfwayFired = false
             onEvent?(.segmentStarted(segments[segmentIndex]))
             emitTick()
         } else {

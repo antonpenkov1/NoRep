@@ -30,17 +30,17 @@ final class SetupPresenter: SetupPresentationLogic {
         switch s.type {
         case .emom:
             let total = TimeInterval(s.emom.rounds) * s.emom.interval
-            return "\(s.emom.rounds) rounds × \(TimeFormat.clock(s.emom.interval)) — total \(TimeFormat.clock(total))"
+            return String(localized: "\(s.emom.rounds) rounds × \(TimeFormat.clock(s.emom.interval)) — total \(TimeFormat.clock(total))")
         case .amrap:
-            return "As many rounds as possible in \(TimeFormat.clock(s.amrap.duration))"
+            return String(localized: "As many rounds as possible in \(TimeFormat.clock(s.amrap.duration))")
         case .forTime:
             return s.forTime.isCapEnabled
-                ? "Finish the work before \(TimeFormat.clock(s.forTime.timeCap))"
-                : "Clock runs up until you hit Finish"
+                ? String(localized: "Finish the work before \(TimeFormat.clock(s.forTime.timeCap))")
+                : String(localized: "Clock runs up until you hit Finish")
         case .tabata:
             let block = WorkoutBlock.tabata(s.tabata)
             let total = block.totalDuration ?? 0
-            return "\(s.tabata.rounds) × (\(Int(s.tabata.work))s work / \(Int(s.tabata.rest))s rest) — total \(TimeFormat.clock(total))"
+            return String(localized: "\(s.tabata.rounds) × (\(Int(s.tabata.work))s work / \(Int(s.tabata.rest))s rest) — total \(TimeFormat.clock(total))")
         case .mix:
             return ""
         }

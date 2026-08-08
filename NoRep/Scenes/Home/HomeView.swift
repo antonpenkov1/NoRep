@@ -2,7 +2,7 @@ import SwiftUI
 
 @MainActor
 final class HomeViewStore: ObservableObject {
-    @Published var viewModel = HomeModels.Load.ViewModel(cards: [], historyLine: "")
+    @Published var viewModel = HomeModels.Load.ViewModel(cards: [], historyLine: "", repeatLast: nil)
 
     var interactor: HomeBusinessLogic!
     var router: HomeRoutingLogic!
@@ -18,7 +18,9 @@ enum HomeSceneFactory {
         let store = HomeViewStore()
         let presenter = HomePresenter()
         presenter.display = store
-        store.interactor = HomeInteractor(presenter: presenter)
+        store.interactor = HomeInteractor(presenter: presenter) { [weak appRouter] plan in
+            appRouter?.push(.workout(plan))
+        }
         store.router = HomeRouter(appRouter: appRouter)
         return store
     }
@@ -37,6 +39,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 12) {
                     header
+                    quickStartSection
                     ForEach(store.viewModel.cards) { card in
                         Button {
                             if card.type == .mix {
@@ -49,6 +52,7 @@ struct HomeView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    benchmarksButton
                     historyButton
                 }
                 .padding(.horizontal, 16)
@@ -87,6 +91,84 @@ struct HomeView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 12)
         .padding(.bottom, 8)
+    }
+
+    @ViewBuilder
+    private var quickStartSection: some View {
+        VStack(spacing: 8) {
+            if let repeatLast = store.viewModel.repeatLast {
+                Button {
+                    store.interactor.repeatLast()
+                } label: {
+                    Card {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.counterclockwise.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(Theme.accent)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("REPEAT LAST")
+                                    .font(.sectionLabel)
+                                    .foregroundStyle(Theme.textSecondary)
+                                Text("\(repeatLast.title) · \(repeatLast.detail)")
+                                    .font(.system(.footnote, design: .rounded).weight(.bold))
+                                    .foregroundStyle(Theme.textPrimary)
+                                    .lineLimit(1)
+                            }
+                            Spacer()
+                            Image(systemName: "play.fill")
+                                .foregroundStyle(Theme.accent)
+                        }
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            HStack(spacing: 8) {
+                ForEach(HomeModels.Preset.allCases, id: \.self) { preset in
+                    Button {
+                        store.interactor.startPreset(preset)
+                    } label: {
+                        Text(preset.title)
+                            .font(.system(.caption, design: .rounded).weight(.black))
+                            .foregroundStyle(Theme.textPrimary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Theme.card, in: Capsule())
+                            .overlay(Capsule().strokeBorder(Theme.cardBorder))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.bottom, 4)
+    }
+
+    private var benchmarksButton: some View {
+        Button {
+            store.router.routeToBenchmarks()
+        } label: {
+            Card {
+                HStack(spacing: 14) {
+                    Image(systemName: "trophy.fill")
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(Theme.prepare)
+                        .frame(width: 44, height: 44)
+                        .background(Theme.prepare.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Benchmarks")
+                            .font(.system(.title3, design: .rounded).weight(.heavy))
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("The Girls & Hero WODs — chase your PRs")
+                            .font(.system(.footnote, design: .rounded))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(Theme.textSecondary)
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     private var historyButton: some View {

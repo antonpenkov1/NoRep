@@ -12,6 +12,10 @@ targets:
       - path: NoRep
     dependencies:
       - target: NoRepWidgets
+    entitlements:
+      path: NoRep/NoRep.entitlements
+      properties:
+        com.apple.developer.healthkit: true
     info:
       path: NoRep/Info.plist
       properties:
@@ -22,11 +26,14 @@ targets:
         NSSupportsLiveActivities: true
         UIBackgroundModes: [audio]
         ITSAppUsesNonExemptEncryption: false
+        NSHealthUpdateUsageDescription: "NoRep saves your finished workouts to Apple Health so they count toward your activity rings."
+        NSHealthShareUsageDescription: "NoRep only writes workouts to Apple Health and never reads your health data."
+        CFBundleLocalizations: [en, ru, sr, es, de, fr, pt-BR]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.norep.app
-        MARKETING_VERSION: "1.1"
-        CURRENT_PROJECT_VERSION: "2"
+        MARKETING_VERSION: "1.2"
+        CURRENT_PROJECT_VERSION: "3"
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.0"
         ENABLE_USER_SCRIPT_SANDBOXING: YES
@@ -49,8 +56,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.norep.app.widgets
-        MARKETING_VERSION: "1.1"
-        CURRENT_PROJECT_VERSION: "2"
+        MARKETING_VERSION: "1.2"
+        CURRENT_PROJECT_VERSION: "3"
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.0"
         SKIP_INSTALL: YES

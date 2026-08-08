@@ -290,7 +290,7 @@ private struct BlockEditorView: View {
         switch kind {
         case .emom:
             VStack(spacing: 8) {
-                StepperRow(title: "Rounds", value: $emom.rounds, range: 1...99)
+                StepperRow(title: String(localized: "Rounds"), value: $emom.rounds, range: 1...99)
                 Divider().overlay(Theme.cardBorder)
                 DurationPicker(duration: $emom.interval, maxMinutes: 10)
             }
@@ -307,14 +307,14 @@ private struct BlockEditorView: View {
             }
         case .tabata:
             VStack(spacing: 8) {
-                StepperRow(title: "Rounds", value: $tabata.rounds, range: 1...30)
+                StepperRow(title: String(localized: "Rounds"), value: $tabata.rounds, range: 1...30)
                 Divider().overlay(Theme.cardBorder)
-                StepperRow(title: "Work (sec)", value: Binding(
+                StepperRow(title: String(localized: "Work (sec)"), value: Binding(
                     get: { Int(tabata.work) },
                     set: { tabata.work = TimeInterval($0) }
                 ), range: 5...120)
                 Divider().overlay(Theme.cardBorder)
-                StepperRow(title: "Rest (sec)", value: Binding(
+                StepperRow(title: String(localized: "Rest (sec)"), value: Binding(
                     get: { Int(tabata.rest) },
                     set: { tabata.rest = TimeInterval($0) }
                 ), range: 0...120)

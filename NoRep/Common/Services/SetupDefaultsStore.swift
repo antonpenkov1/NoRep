@@ -16,6 +16,10 @@ final class SetupDefaultsStore {
         var countdown: TimeInterval = 10
         var soundEnabled = true
         var soundPack: String? = nil
+        var lastPlan: WorkoutPlan? = nil
+        var voiceEnabled: Bool? = nil
+        var halfwayEnabled: Bool? = nil
+        var healthEnabled: Bool? = nil
     }
 
     private let key = "norep.setup.v1"
@@ -75,6 +79,26 @@ final class SetupDefaultsStore {
     var soundPack: String {
         get { stored.soundPack ?? "classic" }
         set { stored.soundPack = newValue; persist() }
+    }
+
+    var lastPlan: WorkoutPlan? {
+        get { stored.lastPlan }
+        set { stored.lastPlan = newValue; persist() }
+    }
+
+    var voiceEnabled: Bool {
+        get { stored.voiceEnabled ?? false }
+        set { stored.voiceEnabled = newValue; persist() }
+    }
+
+    var halfwayEnabled: Bool {
+        get { stored.halfwayEnabled ?? true }
+        set { stored.halfwayEnabled = newValue; persist() }
+    }
+
+    var healthEnabled: Bool {
+        get { stored.healthEnabled ?? false }
+        set { stored.healthEnabled = newValue; persist() }
     }
 
     private func persist() {

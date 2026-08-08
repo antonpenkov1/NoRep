@@ -20,7 +20,13 @@
 - **Journal** — calendar heatmap, day streak, week/month counters, time under the clock
 - **PR tracking** — name a workout (Fran, Murph…) and NoRep compares attempts and celebrates new PRs
 - **Live Activity** — countdown on the lock screen and in the Dynamic Island; cues keep firing in background
-- **Sound packs** — classic beeps, air horn, or soft chimes, with in-app preview
+- **Benchmark library** — 25 named WODs (The Girls + Hero WODs) as one-tap presets with best-result tracking
+- **Quick start** — repeat your last workout or fire a preset right from the home screen
+- **Voice announcements** — "Round 5", "Halfway", "Rest" via system speech, in your language
+- **Share cards** — post a dark result card (time, score, splits, PR badge) straight to stories
+- **Apple Health** — optional; finished workouts count toward your rings
+- **7 languages** — English, Русский, Српски, Español, Deutsch, Français, Português (BR)
+- **Sound packs** — six sets from classic beeps to air horn and 8-bit arcade, with in-app preview
 - **Alternate app icons** — Classic, Blaze, Chalk, Blackout, Gold
 - Loud 3-2-1 / GO sound cues (audible over music, even in silent mode), haptics, phase-colored UI. No account, no analytics, no ads.
 

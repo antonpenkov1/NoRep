@@ -36,7 +36,7 @@ final class HistoryPresenter: HistoryPresentationLogic {
                 note: result.note,
                 dateText: dateFormatter.string(from: result.date),
                 timeText: TimeFormat.clock(TimeInterval(result.totalSeconds)),
-                scoreText: result.rounds.map { $0 == 1 ? "1 round" : "\($0) rounds" },
+                scoreText: result.rounds.map { $0 == 1 ? String(localized: "1 round") : String(localized: "\($0) rounds") },
                 rxText: result.isRx.map { $0 ? "RX" : "SCALED" },
                 feelingEmoji: feelingEmoji(result.feeling)
             )
@@ -67,7 +67,9 @@ final class HistoryPresenter: HistoryPresentationLogic {
             }
             if comparable.count > 1 {
                 let byTime = result.typeID == WorkoutType.forTime.rawValue
-                caption = byTime ? "Time — lower is better" : "Rounds — higher is better"
+                caption = byTime
+                    ? String(localized: "Time — lower is better")
+                    : String(localized: "Rounds — higher is better")
                 let bestValue = byTime
                     ? comparable.map(\.totalSeconds).min().map(Double.init)
                     : comparable.compactMap(\.rounds).max().map(Double.init)
@@ -91,7 +93,7 @@ final class HistoryPresenter: HistoryPresentationLogic {
             title: result.title,
             dateText: dateFormatter.string(from: result.date),
             timeText: TimeFormat.clock(TimeInterval(result.totalSeconds)),
-            scoreText: result.rounds.map { $0 == 1 ? "1 round" : "\($0) rounds" },
+            scoreText: result.rounds.map { $0 == 1 ? String(localized: "1 round") : String(localized: "\($0) rounds") },
             detail: result.detail,
             note: result.note,
             rxText: result.isRx.map { $0 ? "RX" : "SCALED" },

@@ -23,11 +23,11 @@ enum WorkoutType: String, Codable, CaseIterable, Identifiable, Hashable {
 
     var subtitle: String {
         switch self {
-        case .emom: return "Every minute on the minute"
-        case .amrap: return "As many rounds as possible"
-        case .forTime: return "Beat the clock"
-        case .tabata: return "Work / rest intervals"
-        case .mix: return "Chain timers into one WOD"
+        case .emom: return String(localized: "Every minute on the minute")
+        case .amrap: return String(localized: "As many rounds as possible")
+        case .forTime: return String(localized: "Beat the clock")
+        case .tabata: return String(localized: "Work / rest intervals")
+        case .mix: return String(localized: "Chain timers into one WOD")
         }
     }
 
@@ -120,7 +120,7 @@ struct MixBlock: Identifiable, Codable, Hashable {
     }
 }
 
-struct WorkoutPlan: Hashable {
+struct WorkoutPlan: Hashable, Codable {
     var type: WorkoutType
     var blocks: [MixBlock]
     var countdown: TimeInterval

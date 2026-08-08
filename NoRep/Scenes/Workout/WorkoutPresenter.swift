@@ -61,7 +61,7 @@ final class WorkoutPresenter: WorkoutPresentationLogic {
 
         let nextUpLine = response.nextSegment.map { next in
             let duration = next.duration.map { " \(TimeFormat.clock($0))" } ?? ""
-            return "Next: \(next.kind == .rest ? "REST" : next.blockTitle)\(duration)"
+            return String(localized: "Next: \(next.kind == .rest ? "REST" : next.blockTitle)\(duration)")
         }
 
         display?.displayTick(WorkoutSceneModels.Tick.ViewModel(
@@ -71,11 +71,13 @@ final class WorkoutPresenter: WorkoutPresentationLogic {
             timeText: timeText,
             phaseColor: Theme.color(for: segment.kind),
             progress: progress.map { max(0, min(1, $0)) },
-            totalLine: "Total \(TimeFormat.clock(snapshot.totalElapsed))",
+            totalLine: String(localized: "Total \(TimeFormat.clock(snapshot.totalElapsed))"),
             nextUpLine: nextUpLine,
             noteText: segment.note,
             showsRoundButton: segment.tracksRounds,
-            roundsText: response.totalRounds == 1 ? "1 round" : "\(response.totalRounds) rounds",
+            roundsText: response.totalRounds == 1
+                ? String(localized: "1 round")
+                : String(localized: "\(response.totalRounds) rounds"),
             showsDoneSegment: segment.duration == nil,
             showsSkip: response.nextSegment != nil && segment.kind != .prepare
         ))
@@ -86,21 +88,21 @@ final class WorkoutPresenter: WorkoutPresentationLogic {
 
         var prLine: String?
         if response.isPR, let previous = response.previousBest {
-            prLine = "New PR! Previous best \(previous.scoreText)"
+            prLine = String(localized: "New PR! Previous best \(previous.scoreText)")
         } else if let best = response.previousBest {
-            prLine = "Best \(best.scoreText) · attempt #\(response.attemptNumber)"
+            prLine = String(localized: "Best \(best.scoreText) · attempt #\(response.attemptNumber)")
         }
 
         let durations = result.roundDurations
         let splitLines = durations.enumerated().map { index, seconds in
-            "Round \(index + 1) — \(TimeFormat.clock(seconds))"
+            String(localized: "Round \(index + 1) — \(TimeFormat.clock(seconds))")
         }
 
         display?.displaySummary(WorkoutSceneModels.Summary.ViewModel(
             name: result.title,
             detail: result.detail,
             totalText: TimeFormat.clock(TimeInterval(result.totalSeconds)),
-            roundsText: result.rounds.map { $0 == 1 ? "1 round" : "\($0) rounds" },
+            roundsText: result.rounds.map { $0 == 1 ? String(localized: "1 round") : String(localized: "\($0) rounds") },
             note: result.note ?? "",
             isRx: result.isRx,
             feeling: result.feeling,
