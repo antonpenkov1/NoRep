@@ -1,5 +1,25 @@
 # NoRep — App Store Metadata
 
+## What's New in 1.4 (EN)
+
+NoRep is on your wrist now.
+
+• APPLE WATCH — every timer on the watch: haptic cues for 3-2-1, GO and rest, tap the screen to count rounds, and your workout counts toward the activity rings
+• Finished wrist workouts land in the iPhone journal automatically
+• Small fixes and performance improvements
+
+3… 2… 1… Go!
+
+## What's New in 1.4 (RU)
+
+NoRep теперь на вашем запястье.
+
+• APPLE WATCH — все таймеры на часах: хаптика на 3-2-1, «GO» и отдых, тап по экрану считает раунды, а тренировка закрывает кольца активности
+• Тренировки с часов автоматически попадают в журнал на iPhone
+• Мелкие исправления и ускорение
+
+3… 2… 1… Начали!
+
 ## What's New in 1.3 (EN)
 
 The big training update:
