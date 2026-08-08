@@ -3,13 +3,14 @@ import SwiftData
 
 /// SwiftData row for a finished workout. `WorkoutResult` stays the value type
 /// used across the VIP scenes; this model is the persistence shape.
+/// CloudKit rules: no unique constraints, every property optional or defaulted.
 @Model
 final class StoredWorkout {
-    @Attribute(.unique) var id: UUID
-    var date: Date
-    var title: String
-    var detail: String
-    var totalSeconds: Int
+    var id: UUID = UUID()
+    var date: Date = Date()
+    var title: String = ""
+    var detail: String = ""
+    var totalSeconds: Int = 0
     var rounds: Int?
     var typeID: String?
     var splits: [Double]?

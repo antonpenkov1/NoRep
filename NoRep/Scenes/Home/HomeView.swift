@@ -52,6 +52,7 @@ struct HomeView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    myWODsButton
                     benchmarksButton
                     historyButton
                 }
@@ -140,6 +141,35 @@ struct HomeView: View {
             }
         }
         .padding(.bottom, 4)
+    }
+
+    private var myWODsButton: some View {
+        Button {
+            store.router.routeToMyWODs()
+        } label: {
+            Card {
+                HStack(spacing: 14) {
+                    Image(systemName: "bookmark.fill")
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(Theme.work)
+                        .frame(width: 44, height: 44)
+                        .background(Theme.work.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("My WODs")
+                            .font(.system(.title3, design: .rounded).weight(.heavy))
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("Your saved workouts, one tap away")
+                            .font(.system(.footnote, design: .rounded))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(Theme.textSecondary)
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     private var benchmarksButton: some View {

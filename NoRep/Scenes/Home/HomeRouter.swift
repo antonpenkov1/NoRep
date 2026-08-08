@@ -7,6 +7,7 @@ protocol HomeRoutingLogic {
     func routeToHistory()
     func routeToSettings()
     func routeToBenchmarks()
+    func routeToMyWODs()
 }
 
 @MainActor
@@ -36,5 +37,9 @@ final class HomeRouter: HomeRoutingLogic {
 
     func routeToBenchmarks() {
         appRouter?.push(.benchmarks)
+    }
+
+    func routeToMyWODs() {
+        appRouter?.push(.myWODs)
     }
 }

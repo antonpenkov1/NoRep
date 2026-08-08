@@ -13,17 +13,8 @@ final class HistoryStore {
     private let container: ModelContainer
     private var context: ModelContext { container.mainContext }
 
-    init(inMemory: Bool = false, defaults: UserDefaults = .standard) {
-        let configuration = ModelConfiguration(isStoredInMemoryOnly: inMemory)
-        do {
-            container = try ModelContainer(for: StoredWorkout.self, configurations: configuration)
-        } catch {
-            // Never brick the app over a store issue — fall back to memory.
-            container = try! ModelContainer(
-                for: StoredWorkout.self,
-                configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-            )
-        }
+    init(container: ModelContainer? = nil, defaults: UserDefaults = .standard) {
+        self.container = container ?? Persistence.container
         migrateLegacyDefaults(defaults)
     }
 

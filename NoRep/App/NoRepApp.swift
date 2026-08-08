@@ -4,6 +4,10 @@ import SwiftUI
 struct NoRepApp: App {
     @StateObject private var router = AppRouter()
 
+    init() {
+        PhoneWatchSync.shared.activate()
+    }
+
     var body: some Scene {
         WindowGroup {
             NavigationStack(path: $router.path) {
@@ -32,6 +36,8 @@ struct NoRepApp: App {
             route = .settings
         case "benchmarks":
             route = .benchmarks
+        case "mywods":
+            route = .myWODs
         case "workout-emom":
             route = .workout(WorkoutPlan(
                 type: .emom,

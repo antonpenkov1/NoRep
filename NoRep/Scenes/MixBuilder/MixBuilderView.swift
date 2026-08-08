@@ -40,6 +40,7 @@ extension EditingBlock {
 struct MixBuilderView: View {
     @StateObject private var store: MixBuilderViewStore
     @State private var editing: EditingBlock?
+    @State private var savedName: String?
 
     init(router: AppRouter) {
         _store = StateObject(wrappedValue: MixBuilderSceneFactory.make(router: router))
@@ -64,6 +65,22 @@ struct MixBuilderView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    savedName = store.interactor.saveAsWOD()
+                } label: {
+                    Image(systemName: "bookmark")
+                }
+                .disabled(!store.viewModel.canStart)
+            }
+        }
+        .alert(
+            Text("Saved to My WODs"),
+            isPresented: Binding(get: { savedName != nil }, set: { if !$0 { savedName = nil } })
+        ) {
+            Button("OK") { savedName = nil }
+        } message: {
+            Text(savedName ?? "")
         }
         .sheet(item: $editing) { item in
             BlockEditorView(initial: item.block, initialNote: item.note ?? "") { block, note in

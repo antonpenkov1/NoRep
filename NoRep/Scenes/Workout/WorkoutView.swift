@@ -317,6 +317,7 @@ private struct SummaryView: View {
     @State private var isRx: Bool?
     @State private var feeling: Int?
     @State private var shareImage: Image?
+    @State private var savedToLibrary = false
 
     private static let feelings = ["🤕", "😮‍💨", "😐", "💪", "🔥"]
 
@@ -342,6 +343,26 @@ private struct SummaryView: View {
                     splitsCard
                 }
                 detailsCard
+                Button {
+                    interactor.saveAsWOD()
+                    savedToLibrary = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: savedToLibrary ? "bookmark.fill" : "bookmark")
+                        Text(savedToLibrary ? "SAVED TO MY WODS" : "SAVE AS WOD")
+                    }
+                    .font(.system(.headline, design: .rounded).weight(.heavy))
+                    .foregroundStyle(savedToLibrary ? Theme.work : Theme.textPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Theme.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .strokeBorder(savedToLibrary ? Theme.work.opacity(0.4) : Theme.cardBorder)
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(savedToLibrary)
                 if let shareImage {
                     ShareLink(
                         item: shareImage,

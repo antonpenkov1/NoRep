@@ -9,6 +9,8 @@ protocol WorkoutBusinessLogic {
     func finishEarly()
     func abandon()
     func updateSummary(_ edit: WorkoutSceneModels.SummaryEdit)
+    /// Saves this workout's plan into My WODs (named after the current result title).
+    func saveAsWOD()
 }
 
 @MainActor
@@ -100,6 +102,10 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
         savedResult = result
         historyStore.update(result)
         presentSummary(result)
+    }
+
+    func saveAsWOD() {
+        WODStore.shared.add(name: savedResult?.title ?? plan.title, plan: plan)
     }
 
     // MARK: - Engine wiring

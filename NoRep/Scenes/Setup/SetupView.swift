@@ -38,6 +38,7 @@ enum SetupSceneFactory {
 
 struct SetupView: View {
     @StateObject private var store: SetupViewStore
+    @State private var savedName: String?
     private let type: WorkoutType
 
     init(type: WorkoutType, router: AppRouter) {
@@ -64,6 +65,23 @@ struct SetupView: View {
         }
         .navigationTitle(store.viewModel.title)
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    savedName = store.interactor.saveAsWOD()
+                } label: {
+                    Image(systemName: "bookmark")
+                }
+            }
+        }
+        .alert(
+            Text("Saved to My WODs"),
+            isPresented: Binding(get: { savedName != nil }, set: { if !$0 { savedName = nil } })
+        ) {
+            Button("OK") { savedName = nil }
+        } message: {
+            Text(savedName ?? "")
+        }
         .onAppear { store.interactor.load() }
     }
 
