@@ -18,8 +18,10 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
     private let plan: WorkoutPlan
     private let engine = TimerEngine()
     private let sound: SoundService
+    private let voice: VoiceService
     private let haptics = HapticService()
     private let historyStore: HistoryStore
+    private let defaultsStore: SetupDefaultsStore
     private let liveActivity = LiveActivityService()
 
     /// Rounds tallied per segment index (AMRAP / For Time).
@@ -38,12 +40,15 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
         self.plan = plan
         self.presenter = presenter
         self.historyStore = historyStore
+        self.defaultsStore = defaultsStore
         self.sound = SoundService(isEnabled: defaultsStore.soundEnabled, pack: defaultsStore.soundPack)
+        self.voice = VoiceService(isEnabled: defaultsStore.voiceEnabled)
         wireEngine()
     }
 
     func start() {
         guard engine.state == .idle else { return }
+        defaultsStore.lastPlan = plan
         let segments = WorkoutCompiler.compile(plan)
         UIApplication.shared.isIdleTimerDisabled = true
         sound.beginWorkoutSession()
@@ -124,16 +129,25 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
                 case .work:
                     self.sound.play(.go)
                     self.haptics.segmentChange()
+                    self.voice.speak(self.callout(for: segment))
                 case .rest:
                     self.sound.play(.rest)
                     self.haptics.segmentChange()
+                    self.voice.speak(String(localized: "Rest", comment: "Voice callout"))
                 case .prepare:
                     break
                 }
                 self.pushLiveActivityState()
+            case .halfway(let segment):
+                if self.defaultsStore.halfwayEnabled && (segment.tracksRounds || (segment.duration ?? 0) >= 120) {
+                    self.sound.play(.tick)
+                    self.haptics.tick()
+                    self.voice.speak(String(localized: "Halfway", comment: "Voice callout"))
+                }
             case .finished:
                 self.sound.play(.finish)
                 self.haptics.finished()
+                self.voice.speak(String(localized: "Time!", comment: "Voice callout"))
             }
         }
     }
@@ -159,7 +173,28 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
         }
         if let savedResult {
             presentSummary(savedResult)
+            if defaultsStore.healthEnabled {
+                let result = savedResult
+                Task {
+                    await HealthKitService.shared.save(result: result)
+                }
+            }
         }
+    }
+
+    /// "Round 5" / "Final round" / "Go!" for round-tracking segments.
+    private func callout(for segment: WorkoutSegment) -> String {
+        guard !segment.tracksRounds else { return String(localized: "Go!", comment: "Voice callout") }
+        let numbers = engine.segments.enumerated().filter { $0.element.blockIndex == segment.blockIndex && $0.element.kind == .work }
+        if let position = numbers.firstIndex(where: { $0.offset == engine.segmentIndex }) {
+            if position == numbers.count - 1 && numbers.count > 1 {
+                return String(localized: "Final round", comment: "Voice callout")
+            }
+            if numbers.count > 1 {
+                return String(localized: "Round \(position + 1)", comment: "Voice callout")
+            }
+        }
+        return String(localized: "Go!", comment: "Voice callout")
     }
 
     private func presentSummary(_ result: WorkoutResult) {

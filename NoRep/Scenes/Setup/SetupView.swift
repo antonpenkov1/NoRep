@@ -84,7 +84,7 @@ struct SetupView: View {
         Card {
             VStack(spacing: 8) {
                 StepperRow(
-                    title: "Rounds",
+                    title: String(localized: "Rounds"),
                     value: Binding(
                         get: { store.viewModel.emom.rounds },
                         set: { store.interactor.update(.emom(EmomConfig(rounds: $0, interval: store.viewModel.emom.interval))) }
@@ -92,7 +92,7 @@ struct SetupView: View {
                     range: 1...99
                 )
                 Divider().overlay(Theme.cardBorder)
-                labeled("Every") {
+                labeled(String(localized: "Every")) {
                     DurationPicker(duration: Binding(
                         get: { store.viewModel.emom.interval },
                         set: { store.interactor.update(.emom(EmomConfig(rounds: store.viewModel.emom.rounds, interval: $0))) }
@@ -104,7 +104,7 @@ struct SetupView: View {
 
     private var amrapSection: some View {
         Card {
-            labeled("Duration") {
+            labeled(String(localized: "Duration")) {
                 DurationPicker(duration: Binding(
                     get: { store.viewModel.amrap.duration },
                     set: { store.interactor.update(.amrap(AmrapConfig(duration: $0))) }
@@ -139,7 +139,7 @@ struct SetupView: View {
         Card {
             VStack(spacing: 8) {
                 StepperRow(
-                    title: "Rounds",
+                    title: String(localized: "Rounds"),
                     value: Binding(
                         get: { store.viewModel.tabata.rounds },
                         set: { var c = store.viewModel.tabata; c.rounds = $0; store.interactor.update(.tabata(c)) }
@@ -147,11 +147,11 @@ struct SetupView: View {
                     range: 1...30
                 )
                 Divider().overlay(Theme.cardBorder)
-                secondsRow(title: "Work", value: store.viewModel.tabata.work, range: 5...120) {
+                secondsRow(title: String(localized: "Work"), value: store.viewModel.tabata.work, range: 5...120) {
                     var c = store.viewModel.tabata; c.work = $0; store.interactor.update(.tabata(c))
                 }
                 Divider().overlay(Theme.cardBorder)
-                secondsRow(title: "Rest", value: store.viewModel.tabata.rest, range: 0...120) {
+                secondsRow(title: String(localized: "Rest"), value: store.viewModel.tabata.rest, range: 0...120) {
                     var c = store.viewModel.tabata; c.rest = $0; store.interactor.update(.tabata(c))
                 }
             }

@@ -95,13 +95,13 @@ struct HistoryView: View {
     private var statsHeader: some View {
         VStack(spacing: 12) {
             HStack(spacing: 10) {
-                statTile(value: store.viewModel.stats.streakText, label: "day streak", icon: "flame.fill", color: Theme.accent)
-                statTile(value: store.viewModel.stats.thisWeekText, label: "this week", icon: "calendar", color: Theme.work)
-                statTile(value: store.viewModel.stats.thisMonthText, label: "this month", icon: "calendar", color: Theme.rest)
+                statTile(value: store.viewModel.stats.streakText, label: String(localized: "day streak"), icon: "flame.fill", color: Theme.accent)
+                statTile(value: store.viewModel.stats.thisWeekText, label: String(localized: "this week"), icon: "calendar", color: Theme.work)
+                statTile(value: store.viewModel.stats.thisMonthText, label: String(localized: "this month"), icon: "calendar", color: Theme.rest)
             }
             HStack(spacing: 10) {
-                statTile(value: store.viewModel.stats.totalText, label: "workouts", icon: "checkmark.seal.fill", color: Theme.textSecondary)
-                statTile(value: store.viewModel.stats.totalTimeText, label: "under the clock", icon: "clock.fill", color: Theme.prepare)
+                statTile(value: store.viewModel.stats.totalText, label: String(localized: "workouts"), icon: "checkmark.seal.fill", color: Theme.textSecondary)
+                statTile(value: store.viewModel.stats.totalTimeText, label: String(localized: "under the clock"), icon: "clock.fill", color: Theme.prepare)
             }
             heatmap
         }

@@ -5,6 +5,9 @@ protocol SettingsBusinessLogic {
     func load()
     func selectIcon(key: String?)
     func selectPack(key: String)
+    func setVoice(enabled: Bool)
+    func setHalfway(enabled: Bool)
+    func setHealth(enabled: Bool)
 }
 
 @MainActor
@@ -43,10 +46,42 @@ final class SettingsInteractor: SettingsBusinessLogic {
         present()
     }
 
+    func setVoice(enabled: Bool) {
+        defaultsStore.voiceEnabled = enabled
+        if enabled {
+            VoiceService(isEnabled: true).speak(String(localized: "Go!", comment: "Voice callout"))
+        }
+        present()
+    }
+
+    func setHalfway(enabled: Bool) {
+        defaultsStore.halfwayEnabled = enabled
+        present()
+    }
+
+    func setHealth(enabled: Bool) {
+        guard enabled else {
+            defaultsStore.healthEnabled = false
+            present()
+            return
+        }
+        Task { [weak self] in
+            let granted = await HealthKitService.shared.requestAuthorization()
+            await MainActor.run {
+                self?.defaultsStore.healthEnabled = granted
+                self?.present()
+            }
+        }
+    }
+
     private func present(optimisticIcon: String?? = nil) {
         presenter.presentLoad(.init(
             selectedIcon: optimisticIcon ?? UIApplication.shared.alternateIconName,
-            selectedPack: defaultsStore.soundPack
+            selectedPack: defaultsStore.soundPack,
+            voiceEnabled: defaultsStore.voiceEnabled,
+            halfwayEnabled: defaultsStore.halfwayEnabled,
+            healthEnabled: defaultsStore.healthEnabled,
+            healthAvailable: HealthKitService.shared.isAvailable
         ))
     }
 }

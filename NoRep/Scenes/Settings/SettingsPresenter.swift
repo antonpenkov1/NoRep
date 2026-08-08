@@ -19,12 +19,12 @@ final class SettingsPresenter: SettingsPresentationLogic {
     ]
 
     private static let packs: [SettingsModels.PackOption] = [
-        .init(key: "classic", title: "Classic beeps", subtitle: "Sharp digital tones — cuts through anything"),
-        .init(key: "horn", title: "Air horn", subtitle: "Like the box timer on comp day"),
-        .init(key: "soft", title: "Soft chimes", subtitle: "Gentle plucks for early mornings"),
-        .init(key: "whistle", title: "Coach whistle", subtitle: "Ref's peep with a full trill on GO"),
-        .init(key: "bell", title: "Gym bell", subtitle: "Ring it like a fresh PR"),
-        .init(key: "arcade", title: "Arcade", subtitle: "8-bit bleeps — every round is a level up")
+        .init(key: "classic", title: String(localized: "Classic beeps"), subtitle: String(localized: "Sharp digital tones — cuts through anything")),
+        .init(key: "horn", title: String(localized: "Air horn"), subtitle: String(localized: "Like the box timer on comp day")),
+        .init(key: "soft", title: String(localized: "Soft chimes"), subtitle: String(localized: "Gentle plucks for early mornings")),
+        .init(key: "whistle", title: String(localized: "Coach whistle"), subtitle: String(localized: "Ref's peep with a full trill on GO")),
+        .init(key: "bell", title: String(localized: "Gym bell"), subtitle: String(localized: "Ring it like a fresh PR")),
+        .init(key: "arcade", title: String(localized: "Arcade"), subtitle: String(localized: "8-bit bleeps — every round is a level up"))
     ]
 
     func presentLoad(_ response: SettingsModels.Load.Response) {
@@ -32,7 +32,11 @@ final class SettingsPresenter: SettingsPresentationLogic {
             icons: Self.icons,
             selectedIconID: response.selectedIcon ?? "default",
             packs: Self.packs,
-            selectedPack: response.selectedPack
+            selectedPack: response.selectedPack,
+            voiceEnabled: response.voiceEnabled,
+            halfwayEnabled: response.halfwayEnabled,
+            healthEnabled: response.healthEnabled,
+            healthAvailable: response.healthAvailable
         ))
     }
 }

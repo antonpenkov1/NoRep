@@ -21,6 +21,10 @@ enum SettingsModels {
         struct Response {
             var selectedIcon: String?
             var selectedPack: String
+            var voiceEnabled: Bool
+            var halfwayEnabled: Bool
+            var healthEnabled: Bool
+            var healthAvailable: Bool
         }
 
         struct ViewModel: Equatable {
@@ -28,6 +32,10 @@ enum SettingsModels {
             var selectedIconID: String
             var packs: [PackOption]
             var selectedPack: String
+            var voiceEnabled: Bool
+            var halfwayEnabled: Bool
+            var healthEnabled: Bool
+            var healthAvailable: Bool
         }
     }
 }

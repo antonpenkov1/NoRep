@@ -22,10 +22,22 @@ final class HomePresenter: HomePresentationLogic {
         }
         let historyLine: String
         switch response.completedCount {
-        case 0: historyLine = "No workouts yet"
-        case 1: historyLine = "1 workout logged"
-        default: historyLine = "\(response.completedCount) workouts logged"
+        case 0: historyLine = String(localized: "No workouts yet")
+        case 1: historyLine = String(localized: "1 workout logged")
+        default: historyLine = String(localized: "\(response.completedCount) workouts logged")
         }
-        display?.displayLoad(HomeModels.Load.ViewModel(cards: cards, historyLine: historyLine))
+
+        let repeatLast = response.lastPlan.map { plan in
+            HomeModels.Load.ViewModel.QuickStart(
+                title: plan.title,
+                detail: plan.detail
+            )
+        }
+
+        display?.displayLoad(HomeModels.Load.ViewModel(
+            cards: cards,
+            historyLine: historyLine,
+            repeatLast: repeatLast
+        ))
     }
 }

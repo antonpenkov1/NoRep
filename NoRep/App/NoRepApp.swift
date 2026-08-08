@@ -30,6 +30,8 @@ struct NoRepApp: App {
             route = .setup(.tabata)
         case "settings":
             route = .settings
+        case "benchmarks":
+            route = .benchmarks
         case "workout-emom":
             route = .workout(WorkoutPlan(
                 type: .emom,

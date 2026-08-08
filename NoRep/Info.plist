@@ -12,6 +12,16 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ru</string>
+		<string>sr</string>
+		<string>es</string>
+		<string>de</string>
+		<string>fr</string>
+		<string>pt-BR</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
@@ -22,6 +32,10 @@
 	<string>1</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>NoRep only writes workouts to Apple Health and never reads your health data.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>NoRep saves your finished workouts to Apple Health so they count toward your activity rings.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIBackgroundModes</key>

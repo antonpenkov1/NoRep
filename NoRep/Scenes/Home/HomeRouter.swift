@@ -6,6 +6,7 @@ protocol HomeRoutingLogic {
     func routeToMixBuilder()
     func routeToHistory()
     func routeToSettings()
+    func routeToBenchmarks()
 }
 
 @MainActor
@@ -31,5 +32,9 @@ final class HomeRouter: HomeRoutingLogic {
 
     func routeToSettings() {
         appRouter?.push(.settings)
+    }
+
+    func routeToBenchmarks() {
+        appRouter?.push(.benchmarks)
     }
 }

@@ -36,14 +36,14 @@ final class MixBuilderPresenter: MixBuilderPresentationLogic {
 
         let totalLine: String
         if response.blocks.isEmpty {
-            totalLine = "Add blocks to build your WOD"
+            totalLine = String(localized: "Add blocks to build your WOD")
         } else {
             let durations = response.blocks.map(\.block.totalDuration)
             if durations.contains(where: { $0 == nil }) {
-                totalLine = "\(response.blocks.count) blocks · open-ended"
+                totalLine = String(localized: "\(response.blocks.count) blocks · open-ended")
             } else {
                 let total = durations.compactMap { $0 }.reduce(0, +)
-                totalLine = "\(response.blocks.count) blocks · total \(TimeFormat.clock(total))"
+                totalLine = String(localized: "\(response.blocks.count) blocks · total \(TimeFormat.clock(total))")
             }
         }
 

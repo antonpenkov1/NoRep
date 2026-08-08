@@ -316,6 +316,7 @@ private struct SummaryView: View {
     @State private var note: String
     @State private var isRx: Bool?
     @State private var feeling: Int?
+    @State private var shareImage: Image?
 
     private static let feelings = ["🤕", "😮‍💨", "😐", "💪", "🔥"]
 
@@ -341,6 +342,26 @@ private struct SummaryView: View {
                     splitsCard
                 }
                 detailsCard
+                if let shareImage {
+                    ShareLink(
+                        item: shareImage,
+                        preview: SharePreview(summary.name, image: shareImage)
+                    ) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "square.and.arrow.up")
+                            Text("SHARE RESULT")
+                        }
+                        .font(.system(.headline, design: .rounded).weight(.heavy))
+                        .foregroundStyle(Theme.textPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Theme.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .strokeBorder(Theme.cardBorder)
+                        )
+                    }
+                }
                 BigButton(title: "DONE", systemImage: "checkmark") {
                     saveEdits()
                     onDone()
@@ -350,6 +371,18 @@ private struct SummaryView: View {
             .padding(20)
         }
         .scrollDismissesKeyboard(.interactively)
+        .task(id: summary) {
+            shareImage = renderShareCard()
+        }
+    }
+
+    @MainActor
+    private func renderShareCard() -> Image? {
+        let dateText = Date().formatted(date: .abbreviated, time: .omitted)
+        let renderer = ImageRenderer(content: ShareCardView(summary: summary, dateText: dateText))
+        renderer.scale = 3
+        guard let uiImage = renderer.uiImage else { return nil }
+        return Image(uiImage: uiImage)
     }
 
     private var header: some View {
