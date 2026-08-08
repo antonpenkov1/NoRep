@@ -89,12 +89,15 @@ Live Activity + Dynamic Island (таргет NoRepWidgets), фоновое ау�
 ⚠️ Строки в презентерах локализуются ТОЛЬКО через `String(localized:)` — голые
 литералы в презентерах НЕ попадают в каталог (в отличие от SwiftUI `Text("...")`).
 
-### v1.3 — текущая, ГОТОВА К ЗАГРУЗКЕ (не загружена)
+### v1.3 — ВЫПУЩЕНА в App Store (без часов)
 Мои WOD (сохранение из Setup/Mix/после тренировки, свой список со стартом в тап),
-iCloud-синхронизация (журнал + Мои WOD), экспорт CSV/JSON, **Apple Watch app —
-встроен, UI проверен в симуляторе Series 11** (после перезагрузки Mac рантайм
-watchOS 26.5 установился нормально). Watch-скриншоты для ASC: `AppStore/screenshots-watch/`
-(416×496). MARKETING_VERSION 1.3, build 4. Архив: `build/NoRep-1.3.xcarchive`.
+iCloud-синхронизация (журнал + Мои WOD), экспорт CSV/JSON. Загружена и одобрена.
+
+### v1.4 — текущая, ГОТОВА К ЗАГРУЗКЕ (build 5)
+**Apple Watch app** — встроен, UI проверен в симуляторе Series 11 (после перезагрузки
+Mac рантайм watchOS 26.5 установился нормально). Watch-скриншоты для ASC:
+`AppStore/screenshots-watch/` (416×496). Архив: `build/NoRep-1.4.xcarchive`.
+What's New 1.4 (EN/RU) — в metadata.md.
 
 ## Известные проблемы и грабли (ВАЖНО)
 
@@ -124,7 +127,7 @@ xcodegen generate
 xcodebuild -project NoRep.xcodeproj -scheme NoRep \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
 
-# release-архив (текущий: build/NoRep-1.3.xcarchive)
+# release-архив (текущий: build/NoRep-1.4.xcarchive)
 xcodebuild -project NoRep.xcodeproj -scheme NoRep -configuration Release \
   -destination 'generic/platform=iOS' -archivePath build/NoRep-1.3.xcarchive \
   archive -allowProvisioningUpdates
