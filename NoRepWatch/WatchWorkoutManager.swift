@@ -145,6 +145,10 @@ final class WatchWorkoutManager: NSObject, ObservableObject {
     }
 
     private func startHealthSession() {
+        #if DEBUG
+        // Screenshot automation: skip the Health permission sheet in demo mode.
+        if UserDefaults.standard.bool(forKey: "DemoWorkout") { return }
+        #endif
         guard HKHealthStore.isHealthDataAvailable() else { return }
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = .functionalStrengthTraining

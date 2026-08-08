@@ -21,10 +21,7 @@ targets:
       - path: NoRep
     dependencies:
       - target: NoRepWidgets
-      # NoRepWatch is finished but ships in 1.4: this Mac's CoreSimulator can't
-      # mount the watchOS runtime (needs a reboot), so actool can't compile the
-      # watch icon, and the watch UI hasn't been visually verified yet anyway.
-      # - target: NoRepWatch
+      - target: NoRepWatch
     entitlements:
       path: NoRep/NoRep.entitlements
       properties:
