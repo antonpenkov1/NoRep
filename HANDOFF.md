@@ -91,21 +91,20 @@ Live Activity + Dynamic Island (таргет NoRepWidgets), фоновое ау�
 
 ### v1.3 — текущая, ГОТОВА К ЗАГРУЗКЕ (не загружена)
 Мои WOD (сохранение из Setup/Mix/после тренировки, свой список со стартом в тап),
-iCloud-синхронизация (журнал + Мои WOD), экспорт CSV/JSON, **Apple Watch app
-(код готов, НО не встроен в этот релиз — см. ниже)**. MARKETING_VERSION 1.3, build 4.
+iCloud-синхронизация (журнал + Мои WOD), экспорт CSV/JSON, **Apple Watch app —
+встроен, UI проверен в симуляторе Series 11** (после перезагрузки Mac рантайм
+watchOS 26.5 установился нормально). Watch-скриншоты для ASC: `AppStore/screenshots-watch/`
+(416×496). MARKETING_VERSION 1.3, build 4. Архив: `build/NoRep-1.3.xcarchive`.
 
 ## Известные проблемы и грабли (ВАЖНО)
 
-1. **CoreSimulator на этом Mac сломан, нужна перезагрузка Mac.** Симптомы:
-   watchOS-рантайм 26.5 скачан (`xcodebuild -downloadPlatform watchOS`), но не
-   монтируется и не регистрируется; `simctl io screenshot` отдаёт замороженные
-   кадры или падает (NSPOSIXErrorDomain code=1). После перезагрузки: заново
-   `xcodebuild -downloadPlatform watchOS`, проверить `xcrun simctl list runtimes`.
-2. **Watch app не встроен в 1.3**: actool не может собрать иконку часов без
-   смонтированного watch-рантайма + watch-UI не проверен визуально. Для 1.4:
-   раскомментировать `- target: NoRepWatch` в dependencies app-таргета в
-   `project.yml`, `xcodegen generate`, проверить UI (debug-аргумент
-   `-DemoWorkout 1` открывает бегущий EMOM на часах), собрать архив.
+1. **[РЕШЕНО перезагрузкой Mac 2026-08-08]** CoreSimulator ломался: watchOS-рантайм
+   не монтировался, `simctl io screenshot` отдавал замороженные кадры. Если повторится —
+   перезагрузка Mac, затем `xcodebuild -downloadPlatform watchOS`.
+2. **[РЕШЕНО]** Watch app встроен в 1.3 и проверен. Watch-симулятор: "NoRep Watch"
+   (Series 11 46mm, watchOS 26.5). Демо-режим часов: `-DemoWorkout 1` (бегущий EMOM,
+   Health-запрос в демо пропускается). Сборка watch отдельно:
+   `xcodebuild -target NoRepWatch -sdk watchsimulator build`.
 3. **Версии в Info.plist**: xcodegen-генерируемые plist зашивали «1.0» литералом.
    Исправлено: во всех трёх info-блоках `CFBundleShortVersionString: $(MARKETING_VERSION)`,
    `CFBundleVersion: $(CURRENT_PROJECT_VERSION)`. Версию поднимать в `project.yml`
