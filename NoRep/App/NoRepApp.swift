@@ -31,22 +31,38 @@ struct NoRepApp: App {
         case "workout-emom":
             route = .workout(WorkoutPlan(
                 type: .emom,
-                blocks: [.emom(EmomConfig(rounds: 10, interval: 60))],
+                blocks: [MixBlock(block: .emom(EmomConfig(rounds: 10, interval: 60)), note: "12 wall balls + 8 burpees")],
                 countdown: 0
             ))
         case "workout-tabata":
             route = .workout(WorkoutPlan(
                 type: .tabata,
-                blocks: [.tabata(TabataConfig())],
+                blocks: [MixBlock(block: .tabata(TabataConfig()), note: "Air squats — all out")],
                 countdown: 0
+            ))
+        case "workout-sprint":
+            // Finishes in seconds; seeded prior attempt makes the PR banner show.
+            HistoryStore.shared.add(WorkoutResult(
+                date: Date().addingTimeInterval(-5 * 86400),
+                title: "Sprint",
+                detail: "FOR TIME cap 0:10",
+                totalSeconds: 25,
+                typeID: WorkoutType.forTime.rawValue
+            ))
+            route = .workout(WorkoutPlan(
+                type: .forTime,
+                blocks: [MixBlock(block: .forTime(ForTimeConfig(isCapEnabled: true, timeCap: 8)), note: "400m run")],
+                countdown: 0,
+                customName: "Sprint"
             ))
         case "mix":
             defaults.mixBlocks = [
-                MixBlock(block: .amrap(AmrapConfig(duration: 600))),
+                MixBlock(block: .amrap(AmrapConfig(duration: 600)), note: "10 power cleans + 10 T2B"),
                 MixBlock(block: .rest(120)),
-                MixBlock(block: .emom(EmomConfig(rounds: 8, interval: 60))),
-                MixBlock(block: .tabata(TabataConfig()))
+                MixBlock(block: .emom(EmomConfig(rounds: 8, interval: 60)), note: "12/10 cal row"),
+                MixBlock(block: .tabata(TabataConfig()), note: "Air squats")
             ]
+            defaults.mixName = "Engine Day"
             route = .mixBuilder
         case "history":
             let history = HistoryStore.shared

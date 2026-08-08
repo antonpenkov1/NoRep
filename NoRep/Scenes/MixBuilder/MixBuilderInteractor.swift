@@ -3,8 +3,9 @@ import Foundation
 @MainActor
 protocol MixBuilderBusinessLogic {
     func load()
-    func add(block: WorkoutBlock)
-    func update(id: UUID, block: WorkoutBlock)
+    func add(block: WorkoutBlock, note: String?)
+    func update(id: UUID, block: WorkoutBlock, note: String?)
+    func setName(_ name: String)
     func delete(at offsets: IndexSet)
     func move(from source: IndexSet, to destination: Int)
     func start()
@@ -33,15 +34,21 @@ final class MixBuilderInteractor: MixBuilderBusinessLogic {
         present()
     }
 
-    func add(block: WorkoutBlock) {
-        blocks.append(MixBlock(block: block))
+    func add(block: WorkoutBlock, note: String?) {
+        blocks.append(MixBlock(block: block, note: note))
         persist()
     }
 
-    func update(id: UUID, block: WorkoutBlock) {
+    func update(id: UUID, block: WorkoutBlock, note: String?) {
         guard let index = blocks.firstIndex(where: { $0.id == id }) else { return }
         blocks[index].block = block
+        blocks[index].note = note
         persist()
+    }
+
+    func setName(_ name: String) {
+        defaultsStore.mixName = name
+        present()
     }
 
     func delete(at offsets: IndexSet) {
@@ -55,9 +62,14 @@ final class MixBuilderInteractor: MixBuilderBusinessLogic {
     }
 
     func start() {
-        let workBlocks = blocks.map(\.block)
-        guard workBlocks.contains(where: { if case .rest = $0 { return false } else { return true } }) else { return }
-        let plan = WorkoutPlan(type: .mix, blocks: workBlocks, countdown: defaultsStore.countdown)
+        guard blocks.contains(where: { if case .rest = $0.block { return false } else { return true } }) else { return }
+        let name = defaultsStore.mixName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let plan = WorkoutPlan(
+            type: .mix,
+            blocks: blocks,
+            countdown: defaultsStore.countdown,
+            customName: name.isEmpty ? nil : name
+        )
         onStart(plan)
     }
 
@@ -67,6 +79,6 @@ final class MixBuilderInteractor: MixBuilderBusinessLogic {
     }
 
     private func present() {
-        presenter.presentRefresh(.init(blocks: blocks, countdown: defaultsStore.countdown))
+        presenter.presentRefresh(.init(blocks: blocks, name: defaultsStore.mixName, countdown: defaultsStore.countdown))
     }
 }

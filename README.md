@@ -14,8 +14,13 @@
 - **AMRAP** — tap the dial to count rounds
 - **For Time** — count-up with an optional time cap
 - **Tabata** — classic 8 × 20/10 or custom work/rest
-- **Mix** — chain any blocks (plus rest) into a single WOD
-- Loud 3-2-1 / GO sound cues (audible over music, even in silent mode), haptics, phase-colored UI, local workout history. No account, no analytics, no ads.
+- **Mix** — chain any blocks (plus rest) into a single WOD, with per-block movement notes
+- **Workout notes on the timer** — the WOD text stays on screen so you always know what's next
+- **Round splits** — every round tap is timestamped; see your pace fade (or not) on a chart
+- **Journal** — calendar heatmap, day streak, week/month counters, time under the clock
+- **PR tracking** — name a workout (Fran, Murph…) and NoRep compares attempts and celebrates new PRs
+- **Live Activity** — countdown on the lock screen and in the Dynamic Island; cues keep firing in background
+- Loud 3-2-1 / GO sound cues (audible over music, even in silent mode), haptics, phase-colored UI. No account, no analytics, no ads.
 
 ## Tech
 
@@ -42,7 +47,7 @@ xcodebuild -project NoRep.xcodeproj -scheme NoRep \
 ### Screenshot automation
 
 Debug builds accept a `-DemoRoute` launch argument that opens a scene with demo data
-(`workout-emom`, `workout-tabata`, `mix`, `setup-tabata`, `history`):
+(`workout-emom`, `workout-tabata`, `workout-sprint`, `mix`, `setup-tabata`, `history`):
 
 ```bash
 xcrun simctl launch <udid> com.norep.app -DemoRoute mix

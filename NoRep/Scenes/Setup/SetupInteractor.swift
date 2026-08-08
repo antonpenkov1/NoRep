@@ -31,7 +31,9 @@ final class SetupInteractor: SetupBusinessLogic {
             forTime: defaultsStore.forTime,
             tabata: defaultsStore.tabata,
             countdown: defaultsStore.countdown,
-            soundEnabled: defaultsStore.soundEnabled
+            soundEnabled: defaultsStore.soundEnabled,
+            name: "",
+            note: ""
         )
     }
 
@@ -65,6 +67,10 @@ final class SetupInteractor: SetupBusinessLogic {
         case .sound(let enabled):
             state.soundEnabled = enabled
             defaultsStore.soundEnabled = enabled
+        case .name(let text):
+            state.name = text
+        case .note(let text):
+            state.note = text
         }
         presenter.presentRefresh(.init(state: state))
     }
@@ -78,7 +84,14 @@ final class SetupInteractor: SetupBusinessLogic {
         case .tabata: block = .tabata(state.tabata)
         case .mix: return // Mix has its own builder scene.
         }
-        let plan = WorkoutPlan(type: state.type, blocks: [block], countdown: state.countdown)
+        let note = state.note.trimmingCharacters(in: .whitespacesAndNewlines)
+        let name = state.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let plan = WorkoutPlan(
+            type: state.type,
+            blocks: [MixBlock(block: block, note: note.isEmpty ? nil : note)],
+            countdown: state.countdown,
+            customName: name.isEmpty ? nil : name
+        )
         onStart(plan)
     }
 

@@ -2,7 +2,7 @@ import SwiftUI
 
 @MainActor
 final class MixBuilderViewStore: ObservableObject {
-    @Published var viewModel = MixBuilderModels.Refresh.ViewModel(rows: [], totalLine: "", canStart: false)
+    @Published var viewModel = MixBuilderModels.Refresh.ViewModel(rows: [], name: "", totalLine: "", canStart: false)
 
     var interactor: MixBuilderBusinessLogic!
 
@@ -28,12 +28,13 @@ enum MixBuilderSceneFactory {
 private struct EditingBlock: Identifiable {
     var id: UUID?
     var block: WorkoutBlock
+    var note: String?
 
     var listID: String { id?.uuidString ?? "new" }
 }
 
 extension EditingBlock {
-    static var new: EditingBlock { EditingBlock(id: nil, block: .amrap(AmrapConfig())) }
+    static var new: EditingBlock { EditingBlock(id: nil, block: .amrap(AmrapConfig()), note: nil) }
 }
 
 struct MixBuilderView: View {
@@ -48,6 +49,7 @@ struct MixBuilderView: View {
         ZStack {
             Theme.background.ignoresSafeArea()
             VStack(spacing: 0) {
+                nameField
                 if store.viewModel.rows.isEmpty {
                     emptyState
                 } else {
@@ -64,11 +66,11 @@ struct MixBuilderView: View {
             }
         }
         .sheet(item: $editing) { item in
-            BlockEditorView(initial: item.block) { block in
+            BlockEditorView(initial: item.block, initialNote: item.note ?? "") { block, note in
                 if let id = item.id {
-                    store.interactor.update(id: id, block: block)
+                    store.interactor.update(id: id, block: block, note: note)
                 } else {
-                    store.interactor.add(block: block)
+                    store.interactor.add(block: block, note: note)
                 }
             }
             .presentationDetents([.medium, .large])
@@ -76,11 +78,25 @@ struct MixBuilderView: View {
         .onAppear { store.interactor.load() }
     }
 
+    private var nameField: some View {
+        Card {
+            TextField("WOD name — optional, tracks PRs", text: Binding(
+                get: { store.viewModel.name },
+                set: { store.interactor.setName($0) }
+            ))
+            .textFieldStyle(.plain)
+            .font(.system(.body, design: .rounded).weight(.bold))
+            .foregroundStyle(Theme.textPrimary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 4)
+    }
+
     private var blockList: some View {
         List {
             ForEach(store.viewModel.rows) { row in
                 Button {
-                    editing = EditingBlock(id: row.id, block: row.block)
+                    editing = EditingBlock(id: row.id, block: row.block, note: row.note)
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: row.systemImage)
@@ -93,6 +109,12 @@ struct MixBuilderView: View {
                             Text(row.summary)
                                 .font(.system(.footnote, design: .rounded))
                                 .foregroundStyle(Theme.textSecondary)
+                            if let note = row.note {
+                                Text(note)
+                                    .font(.system(.caption, design: .rounded))
+                                    .foregroundStyle(Theme.textSecondary.opacity(0.8))
+                                    .lineLimit(1)
+                            }
                         }
                         Spacer()
                         Image(systemName: "line.3.horizontal")
@@ -164,8 +186,9 @@ private struct BlockEditorView: View {
     @State private var forTime: ForTimeConfig
     @State private var tabata: TabataConfig
     @State private var restDuration: TimeInterval
+    @State private var note: String
 
-    private let onSave: (WorkoutBlock) -> Void
+    private let onSave: (WorkoutBlock, String?) -> Void
 
     enum Kind: String, CaseIterable, Identifiable {
         case emom = "EMOM"
@@ -176,8 +199,9 @@ private struct BlockEditorView: View {
         var id: String { rawValue }
     }
 
-    init(initial: WorkoutBlock, onSave: @escaping (WorkoutBlock) -> Void) {
+    init(initial: WorkoutBlock, initialNote: String, onSave: @escaping (WorkoutBlock, String?) -> Void) {
         self.onSave = onSave
+        _note = State(initialValue: initialNote)
         var kind = Kind.amrap
         var emom = EmomConfig()
         var amrap = AmrapConfig()
@@ -213,6 +237,21 @@ private struct BlockEditorView: View {
                         .pickerStyle(.segmented)
 
                         Card { editor }
+
+                        if kind != .rest {
+                            Card {
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text("MOVEMENTS · shown on the timer screen")
+                                        .font(.sectionLabel)
+                                        .foregroundStyle(Theme.textSecondary)
+                                    TextField("12 burpees + 12 box jumps…", text: $note, axis: .vertical)
+                                        .textFieldStyle(.plain)
+                                        .lineLimit(2...5)
+                                        .font(.system(.body, design: .rounded))
+                                        .foregroundStyle(Theme.textPrimary)
+                                }
+                            }
+                        }
                     }
                     .padding(16)
                 }
@@ -225,7 +264,8 @@ private struct BlockEditorView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        onSave(currentBlock)
+                        let trimmed = note.trimmingCharacters(in: .whitespacesAndNewlines)
+                        onSave(currentBlock, trimmed.isEmpty ? nil : trimmed)
                         dismiss()
                     }
                     .fontWeight(.bold)

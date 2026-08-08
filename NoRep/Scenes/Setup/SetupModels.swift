@@ -10,6 +10,10 @@ enum SetupModels {
         var tabata: TabataConfig
         var countdown: TimeInterval
         var soundEnabled: Bool
+        /// Workout name ("Fran") — the PR-tracking key.
+        var name: String
+        /// The movements: "21-15-9 thrusters / pull-ups".
+        var note: String
     }
 
     enum Refresh {
@@ -26,6 +30,8 @@ enum SetupModels {
             var tabata: TabataConfig
             var countdown: TimeInterval
             var soundEnabled: Bool
+            var name: String
+            var note: String
         }
     }
 
@@ -36,5 +42,7 @@ enum SetupModels {
         case tabata(TabataConfig)
         case countdown(TimeInterval)
         case sound(Bool)
+        case name(String)
+        case note(String)
     }
 }

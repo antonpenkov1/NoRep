@@ -32,6 +32,7 @@ final class WorkoutPresenter: WorkoutPresentationLogic {
                 progress: nil,
                 totalLine: "",
                 nextUpLine: nil,
+                noteText: nil,
                 showsRoundButton: false,
                 roundsText: "",
                 showsDoneSegment: false,
@@ -72,6 +73,7 @@ final class WorkoutPresenter: WorkoutPresentationLogic {
             progress: progress.map { max(0, min(1, $0)) },
             totalLine: "Total \(TimeFormat.clock(snapshot.totalElapsed))",
             nextUpLine: nextUpLine,
+            noteText: segment.note,
             showsRoundButton: segment.tracksRounds,
             roundsText: response.totalRounds == 1 ? "1 round" : "\(response.totalRounds) rounds",
             showsDoneSegment: segment.duration == nil,
@@ -80,13 +82,32 @@ final class WorkoutPresenter: WorkoutPresentationLogic {
     }
 
     func presentSummary(_ response: WorkoutSceneModels.Summary.Response) {
+        let result = response.result
+
+        var prLine: String?
+        if response.isPR, let previous = response.previousBest {
+            prLine = "New PR! Previous best \(previous.scoreText)"
+        } else if let best = response.previousBest {
+            prLine = "Best \(best.scoreText) · attempt #\(response.attemptNumber)"
+        }
+
+        let durations = result.roundDurations
+        let splitLines = durations.enumerated().map { index, seconds in
+            "Round \(index + 1) — \(TimeFormat.clock(seconds))"
+        }
+
         display?.displaySummary(WorkoutSceneModels.Summary.ViewModel(
-            title: response.plan.title,
-            detail: response.plan.detail,
-            totalText: TimeFormat.clock(response.totalElapsed),
-            roundsText: response.totalRounds > 0
-                ? (response.totalRounds == 1 ? "1 round" : "\(response.totalRounds) rounds")
-                : nil
+            name: result.title,
+            detail: result.detail,
+            totalText: TimeFormat.clock(TimeInterval(result.totalSeconds)),
+            roundsText: result.rounds.map { $0 == 1 ? "1 round" : "\($0) rounds" },
+            note: result.note ?? "",
+            isRx: result.isRx,
+            feeling: result.feeling,
+            roundDurations: durations,
+            splitLines: splitLines,
+            prLine: prLine,
+            isPR: response.isPR
         ))
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import Charts
 
 @MainActor
 final class WorkoutViewStore: ObservableObject {
@@ -11,6 +12,7 @@ final class WorkoutViewStore: ObservableObject {
         progress: nil,
         totalLine: "",
         nextUpLine: nil,
+        noteText: nil,
         showsRoundButton: false,
         roundsText: "",
         showsDoneSegment: false,
@@ -45,6 +47,7 @@ enum WorkoutSceneFactory {
 struct WorkoutView: View {
     @StateObject private var store: WorkoutViewStore
     @State private var showAbandonDialog = false
+    @State private var showFullNote = false
 
     init(plan: WorkoutPlan, router: AppRouter) {
         _store = StateObject(wrappedValue: WorkoutSceneFactory.make(plan: plan, router: router))
@@ -55,7 +58,7 @@ struct WorkoutView: View {
             background
 
             if let summary = store.summary {
-                SummaryView(summary: summary) {
+                SummaryView(summary: summary, interactor: store.interactor) {
                     store.router.routeToRoot()
                 }
             } else {
@@ -86,6 +89,9 @@ struct WorkoutView: View {
             }
             Button("Keep going", role: .cancel) {}
         }
+        .sheet(isPresented: $showFullNote) {
+            NoteSheet(title: store.tick.blockTitle, text: store.tick.noteText ?? "")
+        }
         .onAppear { store.interactor.start() }
     }
 
@@ -106,6 +112,7 @@ struct WorkoutView: View {
     private var timerContent: some View {
         VStack(spacing: 0) {
             header
+            noteHint
             Spacer()
             dial
             Spacer()
@@ -128,6 +135,26 @@ struct WorkoutView: View {
                 .tracking(1)
         }
         .padding(.top, 8)
+    }
+
+    @ViewBuilder
+    private var noteHint: some View {
+        if let note = store.tick.noteText {
+            Button {
+                showFullNote = true
+            } label: {
+                Text(note)
+                    .font(.system(.footnote, design: .rounded).weight(.medium))
+                    .foregroundStyle(Theme.textPrimary.opacity(0.85))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Theme.card.opacity(0.8), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 10)
+        }
     }
 
     private var dial: some View {
@@ -246,54 +273,258 @@ struct WorkoutView: View {
     }
 }
 
+// MARK: - Full note sheet
+
+private struct NoteSheet: View {
+    let title: String
+    let text: String
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Theme.background.ignoresSafeArea()
+                ScrollView {
+                    Text(text)
+                        .font(.system(.title3, design: .rounded).weight(.semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(20)
+                }
+            }
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+        .presentationDetents([.medium])
+    }
+}
+
 // MARK: - Summary
 
 private struct SummaryView: View {
     let summary: WorkoutSceneModels.Summary.ViewModel
+    let interactor: WorkoutBusinessLogic
     let onDone: () -> Void
 
+    @State private var name: String
+    @State private var note: String
+    @State private var isRx: Bool?
+    @State private var feeling: Int?
+
+    private static let feelings = ["🤕", "😮‍💨", "😐", "💪", "🔥"]
+
+    init(summary: WorkoutSceneModels.Summary.ViewModel, interactor: WorkoutBusinessLogic, onDone: @escaping () -> Void) {
+        self.summary = summary
+        self.interactor = interactor
+        self.onDone = onDone
+        _name = State(initialValue: summary.name)
+        _note = State(initialValue: summary.note)
+        _isRx = State(initialValue: summary.isRx)
+        _feeling = State(initialValue: summary.feeling)
+    }
+
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 64))
-                .foregroundStyle(Theme.work)
-            Text("WORKOUT DONE")
+        ScrollView {
+            VStack(spacing: 16) {
+                header
+                if let prLine = summary.prLine {
+                    prBanner(prLine)
+                }
+                scoreCard
+                if !summary.roundDurations.isEmpty {
+                    splitsCard
+                }
+                detailsCard
+                BigButton(title: "DONE", systemImage: "checkmark") {
+                    saveEdits()
+                    onDone()
+                }
+                .padding(.top, 4)
+            }
+            .padding(20)
+        }
+        .scrollDismissesKeyboard(.interactively)
+    }
+
+    private var header: some View {
+        VStack(spacing: 10) {
+            Image(systemName: summary.isPR ? "bell.fill" : "checkmark.seal.fill")
+                .font(.system(size: 56))
+                .foregroundStyle(summary.isPR ? Theme.prepare : Theme.work)
+            Text(summary.isPR ? "NEW PR — RING THE BELL" : "WORKOUT DONE")
                 .font(.system(.title3, design: .rounded).weight(.black))
                 .foregroundStyle(Theme.textPrimary)
                 .tracking(2)
-            Card {
-                VStack(spacing: 14) {
-                    summaryRow(title: "Workout", value: summary.title)
-                    Divider().overlay(Theme.cardBorder)
-                    summaryRow(title: "Time", value: summary.totalText)
-                    if let rounds = summary.roundsText {
-                        Divider().overlay(Theme.cardBorder)
-                        summaryRow(title: "Score", value: rounds)
-                    }
-                    Divider().overlay(Theme.cardBorder)
-                    Text(summary.detail)
-                        .font(.system(.footnote, design: .rounded))
-                        .foregroundStyle(Theme.textSecondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-            Spacer()
-            BigButton(title: "DONE", systemImage: "checkmark") {
-                onDone()
-            }
         }
-        .padding(20)
+        .padding(.top, 8)
     }
 
-    private func summaryRow(title: String, value: String) -> some View {
-        HStack {
-            Text(title)
-                .foregroundStyle(Theme.textSecondary)
-            Spacer()
-            Text(value)
-                .font(.system(.body, design: .rounded).weight(.bold))
-                .foregroundStyle(Theme.textPrimary)
+    private func prBanner(_ text: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: summary.isPR ? "trophy.fill" : "chart.line.uptrend.xyaxis")
+            Text(text)
+                .font(.system(.subheadline, design: .rounded).weight(.bold))
         }
+        .foregroundStyle(summary.isPR ? Color.black : Theme.textPrimary)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(
+            summary.isPR ? Theme.prepare : Theme.card,
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+    }
+
+    private var scoreCard: some View {
+        Card {
+            VStack(spacing: 14) {
+                HStack {
+                    Text("Time")
+                        .foregroundStyle(Theme.textSecondary)
+                    Spacer()
+                    Text(summary.totalText)
+                        .font(.system(.title2, design: .rounded).weight(.black))
+                        .foregroundStyle(Theme.accent)
+                }
+                if let rounds = summary.roundsText {
+                    Divider().overlay(Theme.cardBorder)
+                    HStack {
+                        Text("Score")
+                            .foregroundStyle(Theme.textSecondary)
+                        Spacer()
+                        Text(rounds)
+                            .font(.system(.body, design: .rounded).weight(.bold))
+                            .foregroundStyle(Theme.work)
+                    }
+                }
+                Divider().overlay(Theme.cardBorder)
+                Text(summary.detail)
+                    .font(.system(.footnote, design: .rounded))
+                    .foregroundStyle(Theme.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+    }
+
+    private var splitsCard: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("ROUND SPLITS")
+                    .font(.sectionLabel)
+                    .foregroundStyle(Theme.textSecondary)
+                Chart {
+                    ForEach(Array(summary.roundDurations.enumerated()), id: \.offset) { index, seconds in
+                        BarMark(
+                            x: .value("Round", index + 1),
+                            y: .value("Seconds", seconds)
+                        )
+                        .foregroundStyle(Theme.accent.gradient)
+                        .cornerRadius(4)
+                    }
+                    if summary.roundDurations.count > 1 {
+                        RuleMark(y: .value("Average", summary.roundDurations.reduce(0, +) / Double(summary.roundDurations.count)))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                }
+                .chartXAxis {
+                    AxisMarks(values: .automatic(desiredCount: min(summary.roundDurations.count, 10))) { _ in
+                        AxisValueLabel().foregroundStyle(Theme.textSecondary)
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks { value in
+                        AxisGridLine().foregroundStyle(Theme.cardBorder)
+                        AxisValueLabel {
+                            if let seconds = value.as(Double.self) {
+                                Text(TimeFormat.clock(seconds))
+                            }
+                        }
+                        .foregroundStyle(Theme.textSecondary)
+                    }
+                }
+                .frame(height: 140)
+            }
+        }
+    }
+
+    private var detailsCard: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("NAME · used for PR tracking")
+                        .font(.sectionLabel)
+                        .foregroundStyle(Theme.textSecondary)
+                    TextField("Fran, Murph, «Monday hell»…", text: $name)
+                        .textFieldStyle(.plain)
+                        .font(.system(.body, design: .rounded).weight(.bold))
+                        .foregroundStyle(Theme.textPrimary)
+                }
+                Divider().overlay(Theme.cardBorder)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("WORKOUT")
+                        .font(.sectionLabel)
+                        .foregroundStyle(Theme.textSecondary)
+                    TextField("21-15-9 thrusters / pull-ups…", text: $note, axis: .vertical)
+                        .textFieldStyle(.plain)
+                        .lineLimit(2...5)
+                        .font(.system(.body, design: .rounded))
+                        .foregroundStyle(Theme.textPrimary)
+                }
+                Divider().overlay(Theme.cardBorder)
+                HStack(spacing: 10) {
+                    rxButton("RX", value: true)
+                    rxButton("SCALED", value: false)
+                    Spacer()
+                    ForEach(Array(Self.feelings.enumerated()), id: \.offset) { index, emoji in
+                        Button {
+                            feeling = feeling == index + 1 ? nil : index + 1
+                            saveEdits()
+                        } label: {
+                            Text(emoji)
+                                .font(.system(size: 22))
+                                .opacity(feeling == index + 1 ? 1 : (feeling == nil ? 0.7 : 0.3))
+                                .scaleEffect(feeling == index + 1 ? 1.25 : 1)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        .onChange(of: name) { saveEdits() }
+        .onChange(of: note) { saveEdits() }
+    }
+
+    private func rxButton(_ title: String, value: Bool) -> some View {
+        Button {
+            isRx = isRx == value ? nil : value
+            saveEdits()
+        } label: {
+            Text(title)
+                .font(.system(.caption, design: .rounded).weight(.black))
+                .foregroundStyle(isRx == value ? Color.black : Theme.textSecondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(
+                    isRx == value ? Theme.work : Theme.background,
+                    in: Capsule()
+                )
+                .overlay(Capsule().strokeBorder(Theme.cardBorder))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func saveEdits() {
+        interactor.updateSummary(WorkoutSceneModels.SummaryEdit(
+            name: name,
+            note: note,
+            isRx: isRx,
+            feeling: feeling
+        ))
     }
 }
