@@ -36,7 +36,7 @@ For Time, Tabata и конструктор Mix. Название — от суд
 - **Проект генерируется XcodeGen**: источник правды — `project.yml`,
   `NoRep.xcodeproj` в .gitignore. После клонирования/правок: `xcodegen generate`.
 - Таргеты: `NoRep` (iOS app), `NoRepWidgets` (Live Activity/Dynamic Island),
-  `NoRepWatch` (watchOS 10+, **временно НЕ встроен** — см. «Известные проблемы»).
+  `NoRepWatch` (watchOS 10+, встроен в iOS-приложение, UI проверен в симуляторе).
 
 ### Ядро (общее для iOS и watchOS)
 
