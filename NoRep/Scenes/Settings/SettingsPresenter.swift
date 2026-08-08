@@ -21,7 +21,10 @@ final class SettingsPresenter: SettingsPresentationLogic {
     private static let packs: [SettingsModels.PackOption] = [
         .init(key: "classic", title: "Classic beeps", subtitle: "Sharp digital tones — cuts through anything"),
         .init(key: "horn", title: "Air horn", subtitle: "Like the box timer on comp day"),
-        .init(key: "soft", title: "Soft chimes", subtitle: "Gentle plucks for early mornings")
+        .init(key: "soft", title: "Soft chimes", subtitle: "Gentle plucks for early mornings"),
+        .init(key: "whistle", title: "Coach whistle", subtitle: "Ref's peep with a full trill on GO"),
+        .init(key: "bell", title: "Gym bell", subtitle: "Ring it like a fresh PR"),
+        .init(key: "arcade", title: "Arcade", subtitle: "8-bit bleeps — every round is a level up")
     ]
 
     func presentLoad(_ response: SettingsModels.Load.Response) {
