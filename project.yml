@@ -36,6 +36,8 @@ targets:
       path: NoRep/Info.plist
       properties:
         CFBundleDisplayName: NoRep
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIUserInterfaceStyle: Dark
@@ -67,6 +69,8 @@ targets:
       path: NoRepWidgets/Info.plist
       properties:
         CFBundleDisplayName: NoRep Timer
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
@@ -96,6 +100,8 @@ targets:
       path: NoRepWatch/Info.plist
       properties:
         CFBundleDisplayName: NoRep
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         WKApplication: true
         WKCompanionAppBundleIdentifier: com.norep.app
         WKRunsIndependentlyOfCompanionApp: true
