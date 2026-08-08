@@ -15,6 +15,7 @@ final class SetupDefaultsStore {
         var mixName: String? = nil
         var countdown: TimeInterval = 10
         var soundEnabled = true
+        var soundPack: String? = nil
     }
 
     private let key = "norep.setup.v1"
@@ -69,6 +70,11 @@ final class SetupDefaultsStore {
     var soundEnabled: Bool {
         get { stored.soundEnabled }
         set { stored.soundEnabled = newValue; persist() }
+    }
+
+    var soundPack: String {
+        get { stored.soundPack ?? "classic" }
+        set { stored.soundPack = newValue; persist() }
     }
 
     private func persist() {

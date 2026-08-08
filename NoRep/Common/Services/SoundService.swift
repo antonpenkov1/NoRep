@@ -12,14 +12,16 @@ final class SoundService {
     }
 
     var isEnabled: Bool
+    let pack: String
 
     private var players: [Cue: AVAudioPlayer] = [:]
     /// Looped silence that keeps the audio session (and therefore the timer engine
     /// and Live Activity updates) alive while the app is in the background.
     private var keepAlivePlayer: AVAudioPlayer?
 
-    init(isEnabled: Bool = true) {
+    init(isEnabled: Bool = true, pack: String = "classic") {
         self.isEnabled = isEnabled
+        self.pack = pack
         configureSession()
         preload()
     }
@@ -57,7 +59,7 @@ final class SoundService {
 
     private func preload() {
         for cue in Cue.allCases {
-            guard let url = Bundle.main.url(forResource: cue.rawValue, withExtension: "wav") else { continue }
+            guard let url = Bundle.main.url(forResource: "\(pack)_\(cue.rawValue)", withExtension: "wav") else { continue }
             let player = try? AVAudioPlayer(contentsOf: url)
             player?.prepareToPlay()
             players[cue] = player

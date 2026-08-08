@@ -5,6 +5,7 @@ protocol HomeRoutingLogic {
     func routeToSetup(type: WorkoutType)
     func routeToMixBuilder()
     func routeToHistory()
+    func routeToSettings()
 }
 
 @MainActor
@@ -26,5 +27,9 @@ final class HomeRouter: HomeRoutingLogic {
 
     func routeToHistory() {
         appRouter?.push(.history)
+    }
+
+    func routeToSettings() {
+        appRouter?.push(.settings)
     }
 }

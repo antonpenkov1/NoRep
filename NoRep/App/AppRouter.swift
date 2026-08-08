@@ -5,6 +5,7 @@ enum Route: Hashable {
     case mixBuilder
     case workout(WorkoutPlan)
     case history
+    case settings
 }
 
 /// Owns the navigation stack. Scene routers push routes through it,
@@ -37,6 +38,8 @@ final class AppRouter: ObservableObject {
             WorkoutView(plan: plan, router: self)
         case .history:
             HistoryView(router: self)
+        case .settings:
+            SettingsView(router: self)
         }
     }
 }

@@ -28,6 +28,8 @@ struct NoRepApp: App {
         switch demo {
         case "setup-tabata":
             route = .setup(.tabata)
+        case "settings":
+            route = .settings
         case "workout-emom":
             route = .workout(WorkoutPlan(
                 type: .emom,
