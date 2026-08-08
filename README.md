@@ -20,6 +20,8 @@
 - **Journal** — calendar heatmap, day streak, week/month counters, time under the clock
 - **PR tracking** — name a workout (Fran, Murph…) and NoRep compares attempts and celebrates new PRs
 - **Live Activity** — countdown on the lock screen and in the Dynamic Island; cues keep firing in background
+- **Sound packs** — classic beeps, air horn, or soft chimes, with in-app preview
+- **Alternate app icons** — Classic, Blaze, Chalk, Blackout, Gold
 - Loud 3-2-1 / GO sound cues (audible over music, even in silent mode), haptics, phase-colored UI. No account, no analytics, no ads.
 
 ## Tech

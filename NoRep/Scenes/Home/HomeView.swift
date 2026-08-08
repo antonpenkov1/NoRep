@@ -61,13 +61,28 @@ struct HomeView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("NoRep")
-                .font(.system(size: 40, weight: .black, design: .rounded))
-                .foregroundStyle(Theme.textPrimary)
-            Text("3… 2… 1… Go!")
-                .font(.system(.subheadline, design: .rounded).weight(.semibold))
-                .foregroundStyle(Theme.accent)
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("NoRep")
+                    .font(.system(size: 40, weight: .black, design: .rounded))
+                    .foregroundStyle(Theme.textPrimary)
+                Text("3… 2… 1… Go!")
+                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .foregroundStyle(Theme.accent)
+            }
+            Spacer()
+            Button {
+                store.router.routeToSettings()
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .font(.title3)
+                    .foregroundStyle(Theme.textSecondary)
+                    .frame(width: 40, height: 40)
+                    .background(Theme.card, in: Circle())
+                    .overlay(Circle().strokeBorder(Theme.cardBorder))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 8)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 12)

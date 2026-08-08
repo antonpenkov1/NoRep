@@ -38,7 +38,7 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
         self.plan = plan
         self.presenter = presenter
         self.historyStore = historyStore
-        self.sound = SoundService(isEnabled: defaultsStore.soundEnabled)
+        self.sound = SoundService(isEnabled: defaultsStore.soundEnabled, pack: defaultsStore.soundPack)
         wireEngine()
     }
 
