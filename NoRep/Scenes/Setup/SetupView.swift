@@ -10,7 +10,9 @@ final class SetupViewStore: ObservableObject {
         forTime: ForTimeConfig(),
         tabata: TabataConfig(),
         countdown: 10,
-        soundEnabled: true
+        soundEnabled: true,
+        name: "",
+        note: ""
     )
 
     var interactor: SetupBusinessLogic!
@@ -49,6 +51,7 @@ struct SetupView: View {
             ScrollView {
                 VStack(spacing: 14) {
                     typeSection
+                    workoutSection
                     commonSection
                     summaryCard
                     BigButton(title: "START", systemImage: "play.fill") {
@@ -150,6 +153,41 @@ struct SetupView: View {
                 Divider().overlay(Theme.cardBorder)
                 secondsRow(title: "Rest", value: store.viewModel.tabata.rest, range: 0...120) {
                     var c = store.viewModel.tabata; c.rest = $0; store.interactor.update(.tabata(c))
+                }
+            }
+        }
+    }
+
+    // MARK: - Workout name & movements
+
+    private var workoutSection: some View {
+        Card {
+            VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("NAME · optional, tracks your PRs")
+                        .font(.sectionLabel)
+                        .foregroundStyle(Theme.textSecondary)
+                    TextField("Fran, Murph, «Monday hell»…", text: Binding(
+                        get: { store.viewModel.name },
+                        set: { store.interactor.update(.name($0)) }
+                    ))
+                    .textFieldStyle(.plain)
+                    .font(.system(.body, design: .rounded).weight(.bold))
+                    .foregroundStyle(Theme.textPrimary)
+                }
+                Divider().overlay(Theme.cardBorder)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("WORKOUT · shown on the timer screen")
+                        .font(.sectionLabel)
+                        .foregroundStyle(Theme.textSecondary)
+                    TextField("21-15-9 thrusters / pull-ups…", text: Binding(
+                        get: { store.viewModel.note },
+                        set: { store.interactor.update(.note($0)) }
+                    ), axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .lineLimit(2...6)
+                    .font(.system(.body, design: .rounded))
+                    .foregroundStyle(Theme.textPrimary)
                 }
             }
         }

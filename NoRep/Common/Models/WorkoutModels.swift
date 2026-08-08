@@ -107,31 +107,45 @@ enum WorkoutBlock: Codable, Hashable {
     }
 }
 
-/// A block wrapped for editing in the Mix builder.
+/// A block with identity and an optional movements note ("21-15-9 thrusters / pull-ups").
+/// Used both by the Mix builder and as the plan's block unit.
 struct MixBlock: Identifiable, Codable, Hashable {
     var id = UUID()
     var block: WorkoutBlock
+    var note: String?
+
+    var trimmedNote: String? {
+        guard let text = note?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else { return nil }
+        return text
+    }
 }
 
 struct WorkoutPlan: Hashable {
     var type: WorkoutType
-    var blocks: [WorkoutBlock]
+    var blocks: [MixBlock]
     var countdown: TimeInterval
+    /// Athlete-given name ("Fran", "Murph") — the key for benchmark/PR tracking.
+    var customName: String?
 
-    var title: String { type.title }
+    var title: String {
+        if let name = customName?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty {
+            return name
+        }
+        return type.title
+    }
 
     /// Total planned duration, nil if any block is open-ended.
     var totalDuration: TimeInterval? {
         var total: TimeInterval = 0
-        for block in blocks {
-            guard let d = block.totalDuration else { return nil }
+        for item in blocks {
+            guard let d = item.block.totalDuration else { return nil }
             total += d
         }
         return total
     }
 
     var detail: String {
-        blocks.map { "\($0.typeTitle) \($0.summary)" }.joined(separator: " · ")
+        blocks.map { "\($0.block.typeTitle) \($0.block.summary)" }.joined(separator: " · ")
     }
 }
 
@@ -154,6 +168,8 @@ struct WorkoutSegment: Hashable {
     var countsUp: Bool
     /// AMRAP / For Time segments let the athlete tally rounds.
     var tracksRounds: Bool
+    /// The block's movements note, shown on the timer screen as a what-to-do hint.
+    var note: String?
 }
 
 // MARK: - Result
@@ -165,6 +181,45 @@ struct WorkoutResult: Codable, Identifiable, Hashable {
     var detail: String
     var totalSeconds: Int
     var rounds: Int?
+    // v1.1 — all optional so v1.0 history decodes untouched.
+    /// Workout type raw value; used to decide how to compare scores for PRs.
+    var typeID: String?
+    /// Cumulative tap times (seconds from workout start) for AMRAP / For Time rounds.
+    var splits: [Double]?
+    /// What the workout was: "21-15-9 thrusters / pull-ups".
+    var note: String?
+    /// As prescribed (true) or scaled (false); nil — not set.
+    var isRx: Bool?
+    /// How it felt, 1 (destroyed) ... 5 (strong); nil — not set.
+    var feeling: Int?
+
+    /// Per-round durations derived from cumulative splits.
+    var roundDurations: [Double] {
+        guard let splits, !splits.isEmpty else { return [] }
+        var previous = 0.0
+        return splits.map { tap in
+            defer { previous = tap }
+            return tap - previous
+        }
+    }
+
+    var scoreText: String {
+        if let rounds, rounds > 0 {
+            return rounds == 1 ? "1 round" : "\(rounds) rounds"
+        }
+        return TimeFormat.clock(TimeInterval(totalSeconds))
+    }
+
+    /// true if this result beats `other` for the same named workout.
+    func beats(_ other: WorkoutResult) -> Bool {
+        if typeID == WorkoutType.forTime.rawValue {
+            return totalSeconds < other.totalSeconds
+        }
+        if let mine = rounds, let theirs = other.rounds {
+            return mine > theirs
+        }
+        return false
+    }
 }
 
 // MARK: - Time formatting

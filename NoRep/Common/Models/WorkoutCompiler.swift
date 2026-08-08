@@ -19,9 +19,15 @@ enum WorkoutCompiler {
         }
 
         let showBlockNumbers = plan.blocks.count > 1
-        for (index, block) in plan.blocks.enumerated() {
+        for (index, item) in plan.blocks.enumerated() {
             let prefix = showBlockNumbers ? "BLOCK \(index + 1)/\(plan.blocks.count) · " : ""
-            segments.append(contentsOf: compile(block: block, at: index, titlePrefix: prefix))
+            var blockSegments = compile(block: item.block, at: index, titlePrefix: prefix)
+            if let note = item.trimmedNote {
+                for i in blockSegments.indices {
+                    blockSegments[i].note = note
+                }
+            }
+            segments.append(contentsOf: blockSegments)
         }
         return segments
     }

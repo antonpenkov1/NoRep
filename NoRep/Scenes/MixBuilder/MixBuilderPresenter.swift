@@ -25,6 +25,7 @@ final class MixBuilderPresenter: MixBuilderPresentationLogic {
                 id: item.id,
                 title: item.block.typeTitle,
                 summary: item.block.summary,
+                note: item.trimmedNote,
                 systemImage: icon,
                 isRest: isRest,
                 block: item.block
@@ -48,6 +49,7 @@ final class MixBuilderPresenter: MixBuilderPresentationLogic {
 
         display?.displayRefresh(MixBuilderModels.Refresh.ViewModel(
             rows: rows,
+            name: response.name,
             totalLine: totalLine,
             canStart: hasWork
         ))

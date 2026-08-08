@@ -14,6 +14,9 @@ final class SoundService {
     var isEnabled: Bool
 
     private var players: [Cue: AVAudioPlayer] = [:]
+    /// Looped silence that keeps the audio session (and therefore the timer engine
+    /// and Live Activity updates) alive while the app is in the background.
+    private var keepAlivePlayer: AVAudioPlayer?
 
     init(isEnabled: Bool = true) {
         self.isEnabled = isEnabled
@@ -25,6 +28,22 @@ final class SoundService {
         guard isEnabled, let player = players[cue] else { return }
         player.currentTime = 0
         player.play()
+    }
+
+    /// Call when a workout starts: keeps audio running in background so cues fire
+    /// and segment transitions keep updating even with the screen locked.
+    func beginWorkoutSession() {
+        try? AVAudioSession.sharedInstance().setActive(true)
+        if keepAlivePlayer == nil, let url = Bundle.main.url(forResource: "silence", withExtension: "wav") {
+            keepAlivePlayer = try? AVAudioPlayer(contentsOf: url)
+            keepAlivePlayer?.numberOfLoops = -1
+            keepAlivePlayer?.volume = 0.01
+        }
+        keepAlivePlayer?.play()
+    }
+
+    func endWorkoutSession() {
+        keepAlivePlayer?.stop()
     }
 
     private func configureSession() {

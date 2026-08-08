@@ -135,7 +135,10 @@ final class TimerEngine {
 
     private func completeCurrentSegment(overshoot: TimeInterval) {
         guard let segment = currentSegment else { return }
-        completedElapsed += segment.duration ?? currentSegmentElapsed()
+        // The get-ready countdown is not training time.
+        if segment.kind != .prepare {
+            completedElapsed += segment.duration ?? currentSegmentElapsed()
+        }
 
         if segmentIndex + 1 < segments.count {
             segmentIndex += 1
@@ -154,7 +157,7 @@ final class TimerEngine {
 
     private func finish(includeCurrentSegment: Bool) {
         stopTimer()
-        if includeCurrentSegment {
+        if includeCurrentSegment && currentSegment?.kind != .prepare {
             completedElapsed += currentSegmentElapsed()
         }
         accumulated = 0
@@ -165,8 +168,10 @@ final class TimerEngine {
     }
 
     private func totalElapsedNow() -> TimeInterval {
-        // completedElapsed already includes finished segments; add the live one.
-        completedElapsed + (state == .finished ? 0 : currentSegmentElapsed())
+        // completedElapsed already includes finished segments; add the live one
+        // (unless it's the get-ready countdown, which doesn't count as work).
+        let liveCounts = state != .finished && currentSegment?.kind != .prepare
+        return completedElapsed + (liveCounts ? currentSegmentElapsed() : 0)
     }
 
     private func emitTick() {

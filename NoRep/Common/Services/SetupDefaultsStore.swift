@@ -12,6 +12,7 @@ final class SetupDefaultsStore {
         var forTime = ForTimeConfig()
         var tabata = TabataConfig()
         var mixBlocks: [MixBlock] = []
+        var mixName: String? = nil
         var countdown: TimeInterval = 10
         var soundEnabled = true
     }
@@ -53,6 +54,11 @@ final class SetupDefaultsStore {
     var mixBlocks: [MixBlock] {
         get { stored.mixBlocks }
         set { stored.mixBlocks = newValue; persist() }
+    }
+
+    var mixName: String {
+        get { stored.mixName ?? "" }
+        set { stored.mixName = newValue; persist() }
     }
 
     var countdown: TimeInterval {

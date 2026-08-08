@@ -20,7 +20,9 @@ final class SetupPresenter: SetupPresentationLogic {
             forTime: s.forTime,
             tabata: s.tabata,
             countdown: s.countdown,
-            soundEnabled: s.soundEnabled
+            soundEnabled: s.soundEnabled,
+            name: s.name,
+            note: s.note
         ))
     }
 
