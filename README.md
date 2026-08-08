@@ -20,6 +20,10 @@
 - **Journal** — calendar heatmap, day streak, week/month counters, time under the clock
 - **PR tracking** — name a workout (Fran, Murph…) and NoRep compares attempts and celebrates new PRs
 - **Live Activity** — countdown on the lock screen and in the Dynamic Island; cues keep firing in background
+- **Apple Watch app** — timer on the wrist with haptic cues, HKWorkoutSession (counts toward rings), round tapping, results sync to the iPhone journal
+- **My WODs** — save any workout as a reusable template from setup, the mix builder, or right after finishing
+- **iCloud sync** — journal and saved WODs follow you to a new phone (CloudKit-backed SwiftData)
+- **Journal export** — CSV or JSON straight from the journal
 - **Benchmark library** — 25 named WODs (The Girls + Hero WODs) as one-tap presets with best-result tracking
 - **Quick start** — repeat your last workout or fire a preset right from the home screen
 - **Voice announcements** — "Round 5", "Halfway", "Rest" via system speech, in your language

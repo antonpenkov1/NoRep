@@ -6,6 +6,8 @@ protocol MixBuilderBusinessLogic {
     func add(block: WorkoutBlock, note: String?)
     func update(id: UUID, block: WorkoutBlock, note: String?)
     func setName(_ name: String)
+    @discardableResult
+    func saveAsWOD() -> String
     func delete(at offsets: IndexSet)
     func move(from source: IndexSet, to destination: Int)
     func start()
@@ -51,6 +53,13 @@ final class MixBuilderInteractor: MixBuilderBusinessLogic {
         present()
     }
 
+    @discardableResult
+    func saveAsWOD() -> String {
+        guard let plan = buildPlan() else { return "" }
+        WODStore.shared.add(name: plan.title, plan: plan)
+        return plan.title
+    }
+
     func delete(at offsets: IndexSet) {
         blocks.remove(atOffsets: offsets)
         persist()
@@ -62,15 +71,19 @@ final class MixBuilderInteractor: MixBuilderBusinessLogic {
     }
 
     func start() {
-        guard blocks.contains(where: { if case .rest = $0.block { return false } else { return true } }) else { return }
+        guard let plan = buildPlan() else { return }
+        onStart(plan)
+    }
+
+    private func buildPlan() -> WorkoutPlan? {
+        guard blocks.contains(where: { if case .rest = $0.block { return false } else { return true } }) else { return nil }
         let name = defaultsStore.mixName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let plan = WorkoutPlan(
+        return WorkoutPlan(
             type: .mix,
             blocks: blocks,
             countdown: defaultsStore.countdown,
             customName: name.isEmpty ? nil : name
         )
-        onStart(plan)
     }
 
     private func persist() {

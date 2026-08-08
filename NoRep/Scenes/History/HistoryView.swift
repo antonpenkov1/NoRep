@@ -53,8 +53,24 @@ struct HistoryView: View {
         .toolbar {
             if !store.viewModel.isEmpty {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Clear", role: .destructive) {
-                        store.interactor.clearAll()
+                    Menu {
+                        if let csv = store.viewModel.csvURL {
+                            ShareLink(item: csv) {
+                                Label("Export CSV", systemImage: "tablecells")
+                            }
+                        }
+                        if let json = store.viewModel.jsonURL {
+                            ShareLink(item: json) {
+                                Label("Export JSON", systemImage: "curlybraces")
+                            }
+                        }
+                        Button(role: .destructive) {
+                            store.interactor.clearAll()
+                        } label: {
+                            Label("Clear journal", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
                     }
                 }
             }

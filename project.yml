@@ -21,10 +21,14 @@ targets:
       - path: NoRep
     dependencies:
       - target: NoRepWidgets
+      - target: NoRepWatch
     entitlements:
       path: NoRep/NoRep.entitlements
       properties:
         com.apple.developer.healthkit: true
+        com.apple.developer.icloud-services: [CloudKit]
+        com.apple.developer.icloud-container-identifiers: [iCloud.com.norep.app]
+        aps-environment: development
     info:
       path: NoRep/Info.plist
       properties:
@@ -33,7 +37,7 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIUserInterfaceStyle: Dark
         NSSupportsLiveActivities: true
-        UIBackgroundModes: [audio]
+        UIBackgroundModes: [audio, remote-notification]
         ITSAppUsesNonExemptEncryption: false
         NSHealthUpdateUsageDescription: "NoRep saves your finished workouts to Apple Health so they count toward your activity rings."
         NSHealthShareUsageDescription: "NoRep only writes workouts to Apple Health and never reads your health data."
@@ -41,8 +45,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.norep.app
-        MARKETING_VERSION: "1.2"
-        CURRENT_PROJECT_VERSION: "3"
+        MARKETING_VERSION: "1.3"
+        CURRENT_PROJECT_VERSION: "4"
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.0"
         ENABLE_USER_SCRIPT_SANDBOXING: YES
@@ -65,10 +69,40 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.norep.app.widgets
-        MARKETING_VERSION: "1.2"
-        CURRENT_PROJECT_VERSION: "3"
+        MARKETING_VERSION: "1.3"
+        CURRENT_PROJECT_VERSION: "4"
         TARGETED_DEVICE_FAMILY: "1"
         SWIFT_VERSION: "5.0"
         SKIP_INSTALL: YES
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 3UHRLQ9522
+  NoRepWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: "10.0"
+    sources:
+      - path: NoRepWatch
+      - path: NoRep/Common/Models/WorkoutModels.swift
+      - path: NoRep/Common/Models/WorkoutCompiler.swift
+      - path: NoRep/Common/Services/TimerEngine.swift
+    entitlements:
+      path: NoRepWatch/NoRepWatch.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+    info:
+      path: NoRepWatch/Info.plist
+      properties:
+        CFBundleDisplayName: NoRep
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.norep.app
+        WKRunsIndependentlyOfCompanionApp: true
+        NSHealthUpdateUsageDescription: "NoRep saves your workouts to Apple Health."
+        NSHealthShareUsageDescription: "NoRep only writes workouts and never reads your health data."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.norep.app.watchkitapp
+        MARKETING_VERSION: "1.3"
+        CURRENT_PROJECT_VERSION: "4"
+        SWIFT_VERSION: "5.0"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: 3UHRLQ9522

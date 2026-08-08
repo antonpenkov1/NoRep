@@ -32,6 +32,8 @@ enum HistoryModels {
             var rows: [Row]
             var stats: Stats
             var heatWeeks: [[JournalStats.HeatDay]]
+            var csvURL: URL?
+            var jsonURL: URL?
             var isEmpty: Bool { rows.isEmpty }
         }
     }

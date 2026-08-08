@@ -5,6 +5,9 @@ protocol SetupBusinessLogic {
     func load()
     func update(_ field: SetupModels.Field)
     func start()
+    /// Saves the current configuration into My WODs. Returns the saved name.
+    @discardableResult
+    func saveAsWOD() -> String
 }
 
 @MainActor
@@ -76,23 +79,35 @@ final class SetupInteractor: SetupBusinessLogic {
     }
 
     func start() {
+        guard let plan = buildPlan() else { return }
+        onStart(plan)
+    }
+
+    @discardableResult
+    func saveAsWOD() -> String {
+        guard let plan = buildPlan() else { return "" }
+        let name = plan.title
+        WODStore.shared.add(name: name, plan: plan)
+        return name
+    }
+
+    private func buildPlan() -> WorkoutPlan? {
         let block: WorkoutBlock
         switch state.type {
         case .emom: block = .emom(state.emom)
         case .amrap: block = .amrap(state.amrap)
         case .forTime: block = .forTime(state.forTime)
         case .tabata: block = .tabata(state.tabata)
-        case .mix: return // Mix has its own builder scene.
+        case .mix: return nil // Mix has its own builder scene.
         }
         let note = state.note.trimmingCharacters(in: .whitespacesAndNewlines)
         let name = state.name.trimmingCharacters(in: .whitespacesAndNewlines)
-        let plan = WorkoutPlan(
+        return WorkoutPlan(
             type: state.type,
             blocks: [MixBlock(block: block, note: note.isEmpty ? nil : note)],
             countdown: state.countdown,
             customName: name.isEmpty ? nil : name
         )
-        onStart(plan)
     }
 
     private func clamp(_ config: EmomConfig) -> EmomConfig {

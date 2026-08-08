@@ -52,7 +52,9 @@ final class HistoryPresenter: HistoryPresentationLogic {
                 totalText: "\(stats.totalWorkouts)",
                 totalTimeText: stats.totalTimeText
             ),
-            heatWeeks: stats.weeks
+            heatWeeks: stats.weeks,
+            csvURL: response.results.isEmpty ? nil : ExportService.writeCSV(response.results),
+            jsonURL: response.results.isEmpty ? nil : ExportService.writeJSON(response.results)
         ))
     }
 
