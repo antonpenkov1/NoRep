@@ -1,5 +1,39 @@
 # NoRep — App Store Metadata
 
+## What's New in 1.3 (EN)
+
+The big training update:
+
+• JOURNAL — calendar heatmap, day streak, weekly/monthly stats, and time under the clock
+• ROUND SPLITS — every round tap is timestamped; watch your pace on a chart
+• PR TRACKING — name a workout (Fran, Murph…) and NoRep celebrates every new record
+• BENCHMARKS — 25 named WODs (The Girls + Hero WODs) as one-tap presets
+• MY WODS — save your own workouts and start them in one tap
+• WORKOUT NOTES on the timer screen — always know what to do next
+• LIVE ACTIVITY — countdown on the lock screen and in the Dynamic Island
+• VOICE ANNOUNCEMENTS, halfway alert, 6 sound packs, 5 app icons
+• SHARE CARDS — post your result (and PR) straight to stories
+• APPLE HEALTH — finished workouts close your rings
+• iCLOUD SYNC and journal export (CSV/JSON)
+• Now in 7 languages: English, Русский, Српски, Español, Deutsch, Français, Português
+
+## What's New in 1.3 (RU)
+
+Большое тренировочное обновление:
+
+• ЖУРНАЛ — календарь-heatmap, серия дней, статистика недели/месяца и время под таймером
+• СПЛИТЫ РАУНДОВ — каждый тап фиксирует время раунда; темп виден на графике
+• РЕКОРДЫ — назови тренировку (Fran, Murph…), и NoRep отметит каждый новый PR
+• БЕНЧМАРКИ — 25 именных WOD (The Girls + Hero WODs) как готовые пресеты
+• МОИ WOD — сохраняй свои комплексы и запускай в один тап
+• КОМПЛЕКС НА ЭКРАНЕ таймера — всегда видно, что делать дальше
+• LIVE ACTIVITY — отсчёт на локскрине и в Dynamic Island
+• ГОЛОСОВЫЕ АНОНСЫ, сигнал середины, 6 звуковых паков, 5 иконок
+• КАРТОЧКИ РЕЗУЛЬТАТА — делись временем и рекордами в сторис
+• APPLE HEALTH — тренировки закрывают кольца активности
+• СИНХРОНИЗАЦИЯ iCLOUD и экспорт журнала (CSV/JSON)
+• Теперь на 7 языках
+
 ## App name (max 30 chars)
 NoRep: WOD & HIIT Timer
 
