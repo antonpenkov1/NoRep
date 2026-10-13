@@ -30,16 +30,23 @@ struct WorkoutLiveActivity: Widget {
                     }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    TimerText(state: context.state)
-                        .font(.title2.weight(.bold).monospacedDigit())
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: 90, alignment: .trailing)
+                    Image(systemName: context.state.isPaused ? "pause.circle.fill" : "timer")
+                        .font(.title2)
+                        .foregroundStyle(phaseColor(context.state))
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    if let rounds = context.state.roundsText {
-                        Text("\(rounds) rounds")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                    VStack(spacing: 6) {
+                        TimerText(state: context.state)
+                            .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
+                        PhaseProgress(state: context.state)
+                        if let rounds = context.state.roundsText {
+                            Text("\(rounds) rounds")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             } compactLeading: {
@@ -86,6 +93,27 @@ private struct LockScreenView: View {
                 .minimumScaleFactor(0.5)
         }
         .padding(16)
+        .overlay(alignment: .bottom) {
+            PhaseProgress(state: state)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 6)
+        }
+    }
+}
+
+/// System-driven progress bar toward the segment end; hidden for open-ended segments.
+private struct PhaseProgress: View {
+    let state: WorkoutActivityAttributes.ContentState
+
+    var body: some View {
+        if !state.isPaused, let endDate = state.endDate, endDate > state.startDate {
+            ProgressView(timerInterval: state.startDate...endDate, countsDown: true) {
+                EmptyView()
+            } currentValueLabel: {
+                EmptyView()
+            }
+            .tint(phaseColor(state))
+        }
     }
 }
 

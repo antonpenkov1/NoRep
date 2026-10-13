@@ -130,6 +130,10 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
             case .warningTick:
                 self.sound.play(.tick)
                 self.haptics.tick()
+            case .tenSecondsLeft:
+                self.sound.playDouble(.tick)
+                self.haptics.segmentChange()
+                self.voice.speak(String(localized: "10 seconds", comment: "Voice callout"))
             case .segmentStarted(let segment):
                 switch segment.kind {
                 case .work:
@@ -228,15 +232,13 @@ final class WorkoutInteractor: WorkoutBusinessLogic {
         return engine.segments.indices.contains(next) ? engine.segments[next] : nil
     }
 
+    /// Reads elapsed time from the engine, not `lastSnapshot`: on segment change the
+    /// event fires before the next tick, so the snapshot still holds the old segment.
     private func pushLiveActivityState() {
-        guard let snapshot = lastSnapshot ?? nil else {
-            liveActivity.update(engineState: engine.state, segment: engine.currentSegment, segmentElapsed: 0, roundsText: nil)
-            return
-        }
         liveActivity.update(
             engineState: engine.state,
             segment: engine.currentSegment,
-            segmentElapsed: snapshot.segmentElapsed,
+            segmentElapsed: engine.currentSegmentElapsedTime,
             roundsText: engine.currentSegment?.tracksRounds == true ? "\(totalRounds)" : nil
         )
     }

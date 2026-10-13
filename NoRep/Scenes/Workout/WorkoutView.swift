@@ -121,6 +121,10 @@ struct WorkoutView: View {
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 16)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            store.interactor.togglePause()
+        }
     }
 
     private var header: some View {
@@ -176,31 +180,41 @@ struct WorkoutView: View {
                         .font(.system(.caption, design: .rounded).weight(.black))
                         .foregroundStyle(Theme.prepare)
                         .tracking(2)
+                    Text("Tap to resume")
+                        .font(.system(.caption2, design: .rounded))
+                        .foregroundStyle(Theme.textSecondary)
                 }
             }
         }
         .frame(maxWidth: 340, maxHeight: 340)
         .aspectRatio(1, contentMode: .fit)
-        .contentShape(Circle())
-        .onTapGesture {
-            if store.tick.showsRoundButton {
-                store.interactor.addRound()
-            }
-        }
     }
 
     @ViewBuilder
     private var roundSection: some View {
         if store.tick.showsRoundButton {
-            VStack(spacing: 4) {
-                Text(store.tick.roundsText)
-                    .font(.system(.title3, design: .rounded).weight(.heavy))
-                    .foregroundStyle(Theme.textPrimary)
-                Text("Tap the dial for +1 round")
-                    .font(.system(.caption, design: .rounded))
-                    .foregroundStyle(Theme.textSecondary)
+            Button {
+                store.interactor.addRound()
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: "plus.circle.fill")
+                    Text("ROUND")
+                    Text("·").foregroundStyle(Theme.textSecondary)
+                    Text(store.tick.roundsText)
+                }
+                .font(.system(.title3, design: .rounded).weight(.heavy))
+                .foregroundStyle(Theme.textPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .background(Theme.work.opacity(0.18), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(Theme.work.opacity(0.5), lineWidth: 1.5)
+                )
             }
-            .padding(.bottom, 20)
+            .buttonStyle(.plain)
+            .disabled(store.tick.state != .running)
+            .padding(.bottom, 12)
         } else if let nextUp = store.tick.nextUpLine {
             Text(nextUp)
                 .font(.system(.footnote, design: .rounded).weight(.semibold))

@@ -18,6 +18,8 @@ final class TimerEngine {
         case segmentStarted(WorkoutSegment)
         /// Fired once per timed segment (60s and longer) at 50% elapsed.
         case halfway(WorkoutSegment)
+        /// Fired once per timed segment (20s and longer) with 10 seconds left.
+        case tenSecondsLeft(WorkoutSegment)
         case finished
     }
 
@@ -45,6 +47,10 @@ final class TimerEngine {
     private var completedElapsed: TimeInterval = 0
     private var lastWarningSecond: Int = .max
     private var halfwayFired = false
+    private var tenSecondsFired = false
+
+    /// Live elapsed time of the current segment; correct even inside event callbacks.
+    var currentSegmentElapsedTime: TimeInterval { currentSegmentElapsed() }
 
     var currentSegment: WorkoutSegment? {
         segments.indices.contains(segmentIndex) ? segments[segmentIndex] : nil
@@ -60,6 +66,7 @@ final class TimerEngine {
         completedElapsed = 0
         lastWarningSecond = .max
         halfwayFired = false
+        tenSecondsFired = false
         anchor = Date()
         state = .running
         onEvent?(.segmentStarted(segments[0]))
@@ -133,6 +140,10 @@ final class TimerEngine {
                 lastWarningSecond = second
                 onEvent?(.warningTick(secondsLeft: second))
             }
+            if !tenSecondsFired && duration >= 20 && remaining <= 10 && remaining > 3 && segment.kind != .prepare {
+                tenSecondsFired = true
+                onEvent?(.tenSecondsLeft(segment))
+            }
             if !halfwayFired && duration >= 60 && elapsed >= duration / 2 && segment.kind != .prepare {
                 halfwayFired = true
                 onEvent?(.halfway(segment))
@@ -156,6 +167,7 @@ final class TimerEngine {
             anchor = state == .running ? Date() : nil
             lastWarningSecond = .max
             halfwayFired = false
+        tenSecondsFired = false
             onEvent?(.segmentStarted(segments[segmentIndex]))
             emitTick()
         } else {

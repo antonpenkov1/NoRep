@@ -32,6 +32,14 @@ final class SoundService {
         player.play()
     }
 
+    /// Two quick hits of the same cue, used for the 10-seconds-left warning.
+    func playDouble(_ cue: Cue) {
+        play(cue)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) { [weak self] in
+            self?.play(cue)
+        }
+    }
+
     /// Call when a workout starts: keeps audio running in background so cues fire
     /// and segment transitions keep updating even with the screen locked.
     func beginWorkoutSession() {

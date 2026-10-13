@@ -1,5 +1,25 @@
 # NoRep — App Store Metadata
 
+## What's New in 1.4.1 (EN)
+
+Fixes from real gym sessions:
+
+• Lock screen and Dynamic Island timer now keeps counting through every round
+• Long-press the Dynamic Island for a big timer with a progress bar
+• Tap anywhere on the timer screen to pause or resume, even during the countdown
+• New 10-seconds-left warning before each round ends, plus louder 3-2-1 beeps
+• Round counting moved to its own big button
+
+## What's New in 1.4.1 (RU)
+
+Исправления после тренировок в зале:
+
+• Таймер на заблокированном экране и в Dynamic Island больше не замирает на 0:00
+• Зажмите Dynamic Island, чтобы увидеть крупный таймер с полосой прогресса
+• Тап в любое место экрана ставит паузу, даже во время отсчёта перед стартом
+• Сигнал за 10 секунд до конца раунда и более громкие бипы 3-2-1
+• Подсчёт раундов теперь на отдельной большой кнопке
+
 ## What's New in 1.4 (EN)
 
 NoRep is on your wrist now.

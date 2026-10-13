@@ -82,6 +82,8 @@ final class WatchWorkoutManager: NSObject, ObservableObject {
                 }
             case .halfway:
                 WKInterfaceDevice.current().play(.directionUp)
+            case .tenSecondsLeft:
+                WKInterfaceDevice.current().play(.notification)
             case .finished:
                 WKInterfaceDevice.current().play(.success)
                 self.handleFinished()
