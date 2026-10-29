@@ -1,5 +1,15 @@
 # NoRep — App Store Metadata
 
+## What's New in 1.4.2 (EN)
+
+• Landscape mode: turn your phone sideways during a workout for a giant clock you can read from across the gym
+• Tap anywhere on the timer screen to pause or resume
+
+## What's New in 1.4.2 (RU)
+
+• Горизонтальный режим: поверните телефон во время тренировки, и цифры станут огромными, их видно издалека
+• Тап в любое место экрана таймера ставит паузу и снимает её
+
 ## What's New in 1.4.1 (EN)
 
 Fixes from real gym sessions:

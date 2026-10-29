@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct NoRepApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var router = AppRouter()
 
     init() {

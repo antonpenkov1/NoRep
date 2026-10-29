@@ -48,6 +48,9 @@ struct WorkoutView: View {
     @StateObject private var store: WorkoutViewStore
     @State private var showAbandonDialog = false
     @State private var showFullNote = false
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var isLandscape: Bool { verticalSizeClass == .compact }
 
     init(plan: WorkoutPlan, router: AppRouter) {
         _store = StateObject(wrappedValue: WorkoutSceneFactory.make(plan: plan, router: router))
@@ -62,10 +65,24 @@ struct WorkoutView: View {
                     store.router.routeToRoot()
                 }
             } else {
-                timerContent
+                GeometryReader { proxy in
+                    ZStack {
+                        // Full-screen tap target: taps on empty space pause/resume,
+                        // buttons on top still get their own taps.
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .onTapGesture { store.interactor.togglePause() }
+                        if proxy.size.width > proxy.size.height {
+                            landscapeContent(height: proxy.size.height)
+                        } else {
+                            timerContent
+                        }
+                    }
+                }
             }
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar(isLandscape && store.summary == nil ? .hidden : .visible, for: .navigationBar)
         .toolbar {
             if store.summary == nil {
                 ToolbarItem(placement: .topBarLeading) {
@@ -92,7 +109,127 @@ struct WorkoutView: View {
         .sheet(isPresented: $showFullNote) {
             NoteSheet(title: store.tick.blockTitle, text: store.tick.noteText ?? "")
         }
-        .onAppear { store.interactor.start() }
+        .onAppear {
+            OrientationLock.allowLandscape()
+            store.interactor.start()
+        }
+        .onDisappear { OrientationLock.lockPortrait() }
+        .onChange(of: store.summary != nil) { _, finished in
+            if finished { OrientationLock.lockPortrait() }
+        }
+    }
+
+    // MARK: - Landscape: giant clock for reading across the gym
+
+    private func landscapeContent(height: CGFloat) -> some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .center, spacing: 12) {
+                Button {
+                    showAbandonDialog = true
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(Theme.textSecondary)
+                        .frame(width: 36, height: 36)
+                        .background(Theme.card, in: Circle())
+                }
+                .buttonStyle(.plain)
+                Text(store.tick.label)
+                    .font(.system(.title2, design: .rounded).weight(.black))
+                    .foregroundStyle(store.tick.phaseColor)
+                Text(store.tick.blockTitle)
+                    .font(.system(.subheadline, design: .rounded).weight(.heavy))
+                    .foregroundStyle(Theme.textSecondary)
+                    .lineLimit(1)
+                Spacer()
+                if store.tick.state == .paused {
+                    Text("PAUSED")
+                        .font(.system(.headline, design: .rounded).weight(.black))
+                        .foregroundStyle(Theme.prepare)
+                        .tracking(2)
+                }
+                Text(store.tick.totalLine)
+                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .foregroundStyle(Theme.textSecondary)
+            }
+
+            Spacer(minLength: 0)
+            Text(store.tick.timeText)
+                .font(.timerDigits(height * 0.7))
+                .foregroundStyle(store.tick.state == .paused ? Theme.textSecondary : Theme.textPrimary)
+                .minimumScaleFactor(0.3)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+                .contentTransition(.numericText(countsDown: true))
+            Spacer(minLength: 0)
+
+            if let progress = store.tick.progress {
+                GeometryReader { bar in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(store.tick.phaseColor.opacity(0.15))
+                        Capsule().fill(store.tick.phaseColor)
+                            .frame(width: bar.size.width * progress)
+                    }
+                }
+                .frame(height: 8)
+                .allowsHitTesting(false)
+                .padding(.bottom, 10)
+            }
+
+            HStack(spacing: 12) {
+                landscapeButton("flag.checkered", color: Theme.accent) {
+                    store.interactor.finishEarly()
+                }
+                if store.tick.showsRoundButton {
+                    Button {
+                        store.interactor.addRound()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "plus.circle.fill")
+                            Text("ROUND")
+                            Text("·").foregroundStyle(Theme.textSecondary)
+                            Text(store.tick.roundsText)
+                        }
+                        .font(.system(.headline, design: .rounded).weight(.heavy))
+                        .foregroundStyle(Theme.textPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Theme.work.opacity(0.18), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .strokeBorder(Theme.work.opacity(0.5), lineWidth: 1.5)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(store.tick.state != .running)
+                } else {
+                    Text(store.tick.noteText ?? store.tick.nextUpLine ?? "")
+                        .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                        .foregroundStyle(Theme.textSecondary)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
+                        .allowsHitTesting(false)
+                }
+                if store.tick.showsDoneSegment || store.tick.showsSkip {
+                    landscapeButton("forward.end.fill", color: Theme.textSecondary) {
+                        store.interactor.advanceSegment()
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 8)
+    }
+
+    private func landscapeButton(_ systemImage: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(color)
+                .frame(width: 64, height: 46)
+                .background(Theme.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 
     private var background: some View {
