@@ -94,6 +94,16 @@ struct WorkoutView: View {
                             .foregroundStyle(Theme.textSecondary)
                     }
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        OrientationLock.rotate(toLandscape: true)
+                    } label: {
+                        Image(systemName: "rectangle.landscape.rotate")
+                            .font(.body.weight(.bold))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                    .accessibilityLabel(Text("Landscape"))
+                }
             }
         }
         .confirmationDialog("End this workout?", isPresented: $showAbandonDialog, titleVisibility: .visible) {
@@ -151,6 +161,17 @@ struct WorkoutView: View {
                 Text(store.tick.totalLine)
                     .font(.system(.subheadline, design: .rounded).weight(.semibold))
                     .foregroundStyle(Theme.textSecondary)
+                Button {
+                    OrientationLock.rotate(toLandscape: false)
+                } label: {
+                    Image(systemName: "rectangle.portrait.rotate")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(Theme.textSecondary)
+                        .frame(width: 36, height: 36)
+                        .background(Theme.card, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("Portrait"))
             }
 
             Spacer(minLength: 0)

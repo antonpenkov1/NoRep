@@ -24,6 +24,12 @@ enum OrientationLock {
         apply(.allButUpsideDown, request: request)
     }
 
+    /// Explicit rotation from the workout screen. Works even when the iPhone's
+    /// portrait orientation lock is on, which blocks rotation by tilting.
+    static func rotate(toLandscape: Bool) {
+        apply(.allButUpsideDown, request: toLandscape ? .landscapeRight : .portrait)
+    }
+
     static func lockPortrait() {
         apply(.portrait, request: .portrait)
     }

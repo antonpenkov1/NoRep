@@ -46,6 +46,10 @@ struct SettingsView: View {
                     iconSection
                     soundSection
                     extrasSection
+                    Text(versionText)
+                        .font(.footnote)
+                        .foregroundStyle(Theme.textSecondary)
+                        .padding(.top, 4)
                 }
                 .padding(16)
             }
@@ -53,6 +57,13 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.large)
         .onAppear { store.interactor.load() }
+    }
+
+    private var versionText: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "NoRep \(version) (\(build))"
     }
 
     private var iconSection: some View {

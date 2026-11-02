@@ -1,5 +1,15 @@
 # NoRep — App Store Metadata
 
+## What's New in 1.4.3 (EN)
+
+• New rotate button on the timer screen: switch to the giant landscape clock in one tap, even with rotation lock on
+• App version is now shown at the bottom of Settings
+
+## What's New in 1.4.3 (RU)
+
+• Новая кнопка поворота на экране таймера: огромные цифры в горизонтальном режиме в один тап, даже при блокировке поворота
+• Номер версии теперь виден внизу настроек
+
 ## What's New in 1.4.2 (EN)
 
 • Landscape mode: turn your phone sideways during a workout for a giant clock you can read from across the gym
